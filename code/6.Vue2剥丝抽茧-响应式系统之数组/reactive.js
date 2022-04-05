@@ -1,5 +1,9 @@
 import Dep from "./dep";
-import { isObject } from "./util";
+import { isObject, hasProto, def } from "./util";
+import { arrayMethods } from "./array";
+
+const arrayKeys = Object.getOwnPropertyNames(arrayMethods);
+
 /**
  * Define a reactive property on an Object.
  */
@@ -22,6 +26,13 @@ export function defineReactive(obj, key, val, shallow) {
             const value = getter ? getter.call(obj) : val;
             if (Dep.target) {
                 dep.depend();
+                /******新增 *************************/
+                if (childOb) {
+                    if (Array.isArray(value)) {
+                        childOb.dep.depend();
+                    }
+                }
+                /************************************/
             }
             return value;
         },
@@ -40,7 +51,10 @@ export function defineReactive(obj, key, val, shallow) {
 
 export class Observer {
     constructor(value) {
+        this.dep = new Dep();
+        /******新增 *************************/
         def(value, "__ob__", this);
+        /************************************/
         if (Array.isArray(value)) {
             if (hasProto) {
                 protoAugment(value, arrayMethods);
@@ -70,4 +84,26 @@ export function observe(value) {
     }
     let ob = new Observer(value);
     return ob;
+}
+
+/**
+ * Augment a target Object or Array by intercepting
+ * the prototype chain using __proto__
+ */
+function protoAugment(target, src) {
+    /* eslint-disable no-proto */
+    target.__proto__ = src;
+    /* eslint-enable no-proto */
+}
+
+/**
+ * Augment a target Object or Array by defining
+ * hidden properties.
+ */
+/* istanbul ignore next */
+function copyAugment(target, src, keys) {
+    for (let i = 0, l = keys.length; i < l; i++) {
+        const key = keys[i];
+        def(target, key, src[key]);
+    }
 }

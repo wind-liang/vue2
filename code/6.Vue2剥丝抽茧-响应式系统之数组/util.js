@@ -30,3 +30,6 @@ export function def(obj, key, val, enumerable) {
         configurable: true,
     });
 }
+
+// can we use __proto__?
+export const hasProto = "__proto__" in {};
