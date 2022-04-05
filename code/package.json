@@ -1,0 +1,20 @@
+{
+    "name": "vue2-learn",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "dev": "webpack-dev-server --mode development --open",
+        "build": "webpack --mode production"
+    },
+    "keywords": [
+        "vue2源码"
+    ],
+    "author": "windliang",
+    "license": "ISC",
+    "devDependencies": {
+        "webpack": "^5.70.0",
+        "webpack-cli": "^4.9.2",
+        "webpack-dev-server": "^4.7.4"
+    }
+}
