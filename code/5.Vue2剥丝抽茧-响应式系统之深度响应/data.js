@@ -14,8 +14,12 @@ const updateComponent = () => {
 };
 
 new Watcher(updateComponent);
+
+data.text.innerText.childText = "liang";
 data.text = {
     innerText: {
-        childText: "liang",
+        childText: "liang2",
     },
 };
+
+data.text.innerText.childText = "liang3";

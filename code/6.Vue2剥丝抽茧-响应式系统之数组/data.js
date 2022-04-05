@@ -13,4 +13,6 @@ const updateComponent = () => {
 new Watcher(updateComponent);
 // data.list = ["hello", "liang"];
 
+data.list = ["hello", "liang"];
+
 data.list.push("liang");

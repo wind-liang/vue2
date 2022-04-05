@@ -44,6 +44,7 @@ export function defineReactive(obj, key, val, shallow) {
             } else {
                 val = newVal;
             }
+            childOb = !shallow && observe(newVal);
             dep.notify();
         },
     });

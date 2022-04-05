@@ -124,6 +124,103 @@ export function observe(value) {
 }
 ```
 
+# 场景2
+
+```js
+import { observe } from "./reactive";
+import Watcher from "./watcher";
+const data = {
+    text: {
+        innerText: {
+            childText: "hello",
+        },
+    },
+};
+observe(data);
+const updateComponent = () => {
+    console.log(data.text.innerText.childText);
+};
+
+new Watcher(updateComponent);
+
+data.text.innerText.childText = "liang";
+data.text = {
+    innerText: {
+        childText: "liang2",
+    },
+};
+
+data.text.innerText.childText = "liang3";
+
+```
+
+可以一分钟想一下上边会输出什么。
+
+... ...
+
+`new Watcher(updateComponent);` ，执行一次 `updateComponent` 输出 `hello` 。
+
+`data.text.innerText.childText = "liang";` ，我们已经解决了属性是对象的情况，因此这里也会输出 `liang`。
+
+```js
+data.text = {
+    innerText: {
+        childText: "liang2",
+    },
+};
+```
+
+上边代码就是文章最开头的方法，因此也会触发函数执行，输出 `liang2` 。
+
+`data.text.innerText.childText = "liang3";` 最后这句会执行吗？
+
+答案是否定的了，因为我们的 `data.text` 赋值为了一个新对象，但这个新对象我们并没有将其设置为响应式的。
+
+因此我们需要在 `set` 的时候把对象也设置为响应式的。
+
+```js
+/**
+ * Define a reactive property on an Object.
+ */
+export function defineReactive(obj, key, val, shallow) {
+    const property = Object.getOwnPropertyDescriptor(obj, key);
+    // 读取用户可能自己定义了的 get、set
+    const getter = property && property.get;
+    const setter = property && property.set;
+    // val 没有传进来话进行手动赋值
+    if ((!getter || setter) && arguments.length === 2) {
+        val = obj[key];
+    }
+    const dep = new Dep(); // 持有一个 Dep 对象，用来保存所有依赖于该变量的 Watcher
+
+    let childOb = !shallow && observe(val);
+    Object.defineProperty(obj, key, {
+        enumerable: true,
+        configurable: true,
+        get: function reactiveGetter() {
+            const value = getter ? getter.call(obj) : val;
+            if (Dep.target) {
+                dep.depend();
+            }
+            return value;
+        },
+        set: function reactiveSetter(newVal) {
+            const value = getter ? getter.call(obj) : val;
+
+            if (setter) {
+                setter.call(obj, newVal);
+            } else {
+                val = newVal;
+            }
+          /******新增 *************************/
+            childOb = !shallow && observe(newVal);
+           /************************************/
+            dep.notify();
+        },
+    });
+}
+```
+
 # 总
 
 通过递归解决了属性是对象的依赖，可以为未来数组的依赖留下基础。

@@ -59,6 +59,10 @@ module.exports = {
                         title: "响应式系统之深度响应",
                         path: "/posts/Vue2剥丝抽茧-响应式系统之深度响应",
                     },
+                    {
+                        title: "响应式系统之数组",
+                        path: "/posts/Vue2剥丝抽茧-响应式系统之数组",
+                    },
                 ],
             },
         ],
