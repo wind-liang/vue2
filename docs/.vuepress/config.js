@@ -8,7 +8,7 @@ module.exports = {
         [
             "vuepress-plugin-baidu-tongji-analytics",
             {
-                key: "ff378ce1bb78883924b7f4fca85a70de",
+                key: "baef808a4403af4a3001bb28345eaf85",
             },
         ],
     ],
