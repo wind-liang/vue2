@@ -1,8 +1,9 @@
 import Dep from "./dep";
+import { isObject } from "./util";
 /**
  * Define a reactive property on an Object.
  */
-export function defineReactive(obj, key, val) {
+export function defineReactive(obj, key, val, shallow) {
     const property = Object.getOwnPropertyDescriptor(obj, key);
     // 读取用户可能自己定义了的 get、set
     const getter = property && property.get;
@@ -11,22 +12,17 @@ export function defineReactive(obj, key, val) {
     if ((!getter || setter) && arguments.length === 2) {
         val = obj[key];
     }
-
-    /*********************************************/
     const dep = new Dep(); // 持有一个 Dep 对象，用来保存所有依赖于该变量的 Watcher
-    /*********************************************/
 
+    let childOb = !shallow && observe(val);
     Object.defineProperty(obj, key, {
         enumerable: true,
         configurable: true,
         get: function reactiveGetter() {
             const value = getter ? getter.call(obj) : val;
-            /*********************************************/
-            // 1.这里需要去保存当前在执行的函数
             if (Dep.target) {
                 dep.depend();
             }
-            /*********************************************/
             return value;
         },
         set: function reactiveSetter(newVal) {
@@ -37,10 +33,7 @@ export function defineReactive(obj, key, val) {
             } else {
                 val = newVal;
             }
-            /*********************************************/
-            // 2.将依赖当前数据依赖的函数执行
             dep.notify();
-            /*********************************************/
         },
     });
 }
@@ -63,6 +56,9 @@ export class Observer {
 }
 
 export function observe(value) {
+    if (!isObject(value)) {
+        return;
+    }
     let ob = new Observer(value);
     return ob;
 }
