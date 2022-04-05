@@ -40,7 +40,16 @@ export function defineReactive(obj, key, val, shallow) {
 
 export class Observer {
     constructor(value) {
-        this.walk(value);
+        def(value, "__ob__", this);
+        if (Array.isArray(value)) {
+            if (hasProto) {
+                protoAugment(value, arrayMethods);
+            } else {
+                copyAugment(value, arrayMethods, arrayKeys);
+            }
+        } else {
+            this.walk(value);
+        }
     }
 
     /**

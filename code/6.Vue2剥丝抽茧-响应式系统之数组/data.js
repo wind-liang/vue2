@@ -1,20 +1,16 @@
 import { observe } from "./reactive";
 import Watcher from "./watcher";
 const data = {
-    text: {
-        innerText: {
-            childText: "hello",
-        },
-    },
+    list: ["hello"],
 };
 observe(data);
 const updateComponent = () => {
-    console.log(data.text.innerText.childText);
+    for (const item of data.list) {
+        console.log(item);
+    }
 };
 
 new Watcher(updateComponent);
-data.text = {
-    innerText: {
-        childText: "liang",
-    },
-};
+// data.list = ["hello", "liang"];
+
+data.list.push("liang");
