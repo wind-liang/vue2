@@ -26,11 +26,22 @@ methodsToPatch.forEach(function (method) {
     const original = arrayProto[method];
     def(arrayMethods, method, function mutator(...args) {
         const result = original.apply(this, args);
-        /*****************这里相当于调用了对象 set 需要通知 watcher ************************/
         const ob = this.__ob__;
+        /******新增 *************************/
+        let inserted; // 加添加的元素拿到
+        switch (method) {
+            case "push":
+            case "unshift":
+                inserted = args;
+                break;
+            case "splice":
+                inserted = args.slice(2);
+                break;
+        }
+        if (inserted) ob.observeArray(inserted);
+        /************************************/
         // notify change
         ob.dep.notify();
-        /**************************************************************************** */
         return result;
     });
 });

@@ -17,7 +17,6 @@ export function defineReactive(obj, key, val, shallow) {
         val = obj[key];
     }
     const dep = new Dep(); // 持有一个 Dep 对象，用来保存所有依赖于该变量的 Watcher
-
     let childOb = !shallow && observe(val);
     Object.defineProperty(obj, key, {
         enumerable: true,
@@ -26,13 +25,14 @@ export function defineReactive(obj, key, val, shallow) {
             const value = getter ? getter.call(obj) : val;
             if (Dep.target) {
                 dep.depend();
-                /******新增 *************************/
                 if (childOb) {
                     if (Array.isArray(value)) {
                         childOb.dep.depend();
+                        /******新增 *************************/
+                        dependArray(value);
+                        /************************************/
                     }
                 }
-                /************************************/
             }
             return value;
         },
@@ -62,6 +62,7 @@ export class Observer {
             } else {
                 copyAugment(value, arrayMethods, arrayKeys);
             }
+            this.observeArray(value);
         } else {
             this.walk(value);
         }
@@ -75,6 +76,15 @@ export class Observer {
         const keys = Object.keys(obj);
         for (let i = 0; i < keys.length; i++) {
             defineReactive(obj, keys[i]);
+        }
+    }
+
+    /**
+     * Observe a list of Array items.
+     */
+    observeArray(items) {
+        for (let i = 0, l = items.length; i < l; i++) {
+            observe(items[i]);
         }
     }
 }
@@ -106,5 +116,19 @@ function copyAugment(target, src, keys) {
     for (let i = 0, l = keys.length; i < l; i++) {
         const key = keys[i];
         def(target, key, src[key]);
+    }
+}
+
+/**
+ * Collect dependencies on array elements when the array is touched, since
+ * we cannot intercept array element access like property getters.
+ */
+function dependArray(value) {
+    for (let e, i = 0, l = value.length; i < l; i++) {
+        e = value[i];
+        if (Array.isArray(e)) {
+            e && e.__ob__ && e.__ob__.dep.depend();
+            dependArray(e);
+        }
     }
 }
