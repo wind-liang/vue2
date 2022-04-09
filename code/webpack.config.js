@@ -1,6 +1,6 @@
 const path = require("path");
 module.exports = {
-    entry: "./7.Vue2剥丝抽茧-响应式系统之数组2/data.js",
+    entry: "./8.Vue2剥丝抽茧-响应式系统之set和delete/data.js",
     output: {
         path: path.resolve(__dirname, "./dist"),
         filename: "bundle.js",

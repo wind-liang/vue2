@@ -33,3 +33,19 @@ export function def(obj, key, val, enumerable) {
 
 // can we use __proto__?
 export const hasProto = "__proto__" in {};
+
+/**
+ * Check if val is a valid array index.
+ */
+export function isValidArrayIndex(val) {
+    const n = parseFloat(String(val));
+    return n >= 0 && Math.floor(n) === n && isFinite(val);
+}
+
+/**
+ * Check whether an object has the property.
+ */
+const hasOwnProperty = Object.prototype.hasOwnProperty;
+export function hasOwn(obj, key) {
+    return hasOwnProperty.call(obj, key);
+}

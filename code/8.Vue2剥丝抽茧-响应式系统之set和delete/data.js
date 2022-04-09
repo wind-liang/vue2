@@ -1,74 +1,51 @@
-import { observe } from "./reactive";
+import { observe, set, del } from "./reactive";
 import Watcher from "./watcher";
 // const data = {
-//     list: [
-//         {
-//             text: "hello",
-//         },
-//     ],
+//     list: [1, 2],
 // };
 // observe(data);
 // const updateComponent = () => {
-//     for (const item of data.list) {
-//         console.log(item.text);
-//     }
+//     console.log(data.list);
 // };
 
 // new Watcher(updateComponent);
 
-// data.list[0].text = "liang";
-
+// list[0] = 3;
+// data.list.splice(0, 1, 3);
+// set(data.list, 0, 4);
+// del(data.list, 0);
 // const data = {
-//     list: [
-//         ["hello", "wind"],
-//         ["hello", "liang"],
-//     ],
-// };
-// observe(data);
-// const updateComponent = () => {
-//     for (const item of data.list) {
-//         console.log(item);
-//     }
-// };
-
-// new Watcher(updateComponent);
-// console.log(data.list);
-// data.list.push(["updated"]);
-
-// data.list[0].push("updated2");
-
-// const data = {
-//     obj1: {
-//         obj2: {
-//             obj3: ["test"],
-//         },
+//     obj: {
+//         a: 1,
+//         b: 2,
 //     },
 // };
 // observe(data);
 // const updateComponent = () => {
-//     console.log(data.obj1.obj2.obj3);
+//     const c = data.obj.c ? data.obj.c : 0;
+//     console.log(data.obj.a + data.obj.b + c);
 // };
 
 // new Watcher(updateComponent);
 
-// data.obj1.obj2.obj3.push("liang");
+// data.obj.c = 3;
 
 const data = {
-    list: [
-        ["hello", "wind"],
-        ["hello", "liang"],
-    ],
+    obj: {
+        a: 1,
+        b: 2,
+    },
 };
 observe(data);
 const updateComponent = () => {
-    for (const item of data.list) {
-        console.log(item);
-    }
+    const c = data.obj.c ? data.obj.c : 0;
+    console.log(data.obj.a + data.obj.b + c);
 };
 
-new Watcher(updateComponent);
-data.list.push(["hi"]);
+const ob = new Watcher(updateComponent);
 
-data.list[2].push([["liang"]]);
+set(data.obj, "c", 3);
 
-console.log(data.list);
+data.obj.c = 5;
+
+del(data.obj, "a");

@@ -1,5 +1,5 @@
 import Dep from "./dep";
-import { isObject, hasProto, def } from "./util";
+import { isObject, hasProto, def, hasOwn } from "./util";
 import { arrayMethods } from "./array";
 
 const arrayKeys = Object.getOwnPropertyNames(arrayMethods);
@@ -26,11 +26,9 @@ export function defineReactive(obj, key, val, shallow) {
             if (Dep.target) {
                 dep.depend();
                 if (childOb) {
+                    childOb.dep.depend();
                     if (Array.isArray(value)) {
-                        childOb.dep.depend();
-                        /******新增 *************************/
                         dependArray(value);
-                        /************************************/
                     }
                 }
             }
@@ -53,9 +51,7 @@ export function defineReactive(obj, key, val, shallow) {
 export class Observer {
     constructor(value) {
         this.dep = new Dep();
-        /******新增 *************************/
         def(value, "__ob__", this);
-        /************************************/
         if (Array.isArray(value)) {
             if (hasProto) {
                 protoAugment(value, arrayMethods);
@@ -131,4 +127,54 @@ function dependArray(value) {
             dependArray(e);
         }
     }
+}
+
+/**
+ * Set a property on an object. Adds the new property and
+ * triggers change notification if the property doesn't
+ * already exist.
+ */
+export function set(target, key, val) {
+    if (Array.isArray(target)) {
+        target.length = Math.max(target.length, key);
+        target.splice(key, 1, val);
+        return val;
+    }
+
+    // targe 是对象的情况
+    // key 在 target 中已经存在
+    if (key in target && !(key in Object.prototype)) {
+        target[key] = val;
+        return val;
+    }
+
+    const ob = target.__ob__;
+    // target 不是响应式数据
+    if (!ob) {
+        target[key] = val;
+        return val;
+    }
+    defineReactive(target, key, val);
+    ob.dep.notify();
+    return val;
+}
+
+/**
+ * Delete a property and trigger change if necessary.
+ */
+export function del(target, key) {
+    if (Array.isArray(target)) {
+        target.splice(key, 1);
+        return;
+    }
+    // targe 是对象的情况
+    const ob = target.__ob__;
+    if (!hasOwn(target, key)) {
+        return;
+    }
+    delete target[key];
+    if (!ob) {
+        return;
+    }
+    ob.dep.notify();
 }

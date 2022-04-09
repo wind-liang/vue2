@@ -40,32 +40,36 @@ module.exports = {
                 collapsable: false, // 不折叠
                 children: [
                     {
-                        title: "响应式系统",
+                        title: "1.响应式系统",
                         path: "/posts/Vue2剥丝抽茧-响应式系统",
                     },
                     {
-                        title: "响应式系统之分支切换",
+                        title: "2.响应式系统之分支切换",
                         path: "/posts/Vue2剥丝抽茧-响应式系统之分支切换",
                     },
                     {
-                        title: "响应式系统之嵌套",
+                        title: "3.响应式系统之嵌套",
                         path: "/posts/Vue2剥丝抽茧-响应式系统之嵌套",
                     },
                     {
-                        title: "响应式系统完善",
+                        title: "4.响应式系统完善",
                         path: "/posts/Vue2剥丝抽茧-响应式系统完善",
                     },
                     {
-                        title: "响应式系统之深度响应",
+                        title: "5.响应式系统之深度响应",
                         path: "/posts/Vue2剥丝抽茧-响应式系统之深度响应",
                     },
                     {
-                        title: "响应式系统之数组",
+                        title: "6.响应式系统之数组",
                         path: "/posts/Vue2剥丝抽茧-响应式系统之数组",
                     },
                     {
-                        title: "响应式系统之数组2",
+                        title: "7.响应式系统之数组2",
                         path: "/posts/Vue2剥丝抽茧-响应式系统之数组2",
+                    },
+                    {
+                        title: "8.响应式系统之set和delete",
+                        path: "/posts/Vue2剥丝抽茧-响应式系统之set和delete",
                     },
                 ],
             },
