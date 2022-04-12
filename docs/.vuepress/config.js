@@ -71,6 +71,10 @@ module.exports = {
                         title: "8.响应式系统之set和delete",
                         path: "/posts/Vue2剥丝抽茧-响应式系统之set和delete",
                     },
+                    {
+                        title: "9.响应式系统之异步队列",
+                        path: "/posts/Vue2剥丝抽茧-响应式系统之异步队列",
+                    },
                 ],
             },
         ],

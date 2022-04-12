@@ -1,11 +1,19 @@
 import { pushTarget, popTarget } from "./dep";
+import { queueWatcher } from "./scheduler";
+let uid = 0;
+
 export default class Watcher {
-    constructor(Fn) {
+    constructor(Fn, options) {
         this.getter = Fn;
         this.depIds = new Set(); // 拥有 has 函数可以判断是否存在某个 id
         this.deps = [];
         this.newDeps = []; // 记录新一次的依赖
         this.newDepIds = new Set();
+        this.id = ++uid; // uid for batching
+        // options
+        if (options) {
+            this.sync = !!options.sync;
+        }
         this.get();
     }
 
@@ -69,7 +77,11 @@ export default class Watcher {
      * Will be called when a dependency changes.
      */
     update() {
-        this.run();
+        if (this.sync) {
+            this.run();
+        } else {
+            queueWatcher(this);
+        }
     }
 
     /**
