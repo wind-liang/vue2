@@ -1,25 +1,53 @@
+// document.getElementById("root").innerText = "hello";
+// setTimeout(() => {
+//     document.getElementById("root").innerText = "hello2";
+//     setTimeout(() => {
+//         document.getElementById("root").innerText = "hello3";
+//         setTimeout(() => {
+//             document.getElementById("root").innerText = "liang";
+//         }, 1000);
+//     }, 1000);
+// }, 1000);
+
 import { observe } from "./reactive";
 import Watcher from "./watcher";
-
+import { nextTick } from "./next-tick";
 const data = {
-    a: 1,
-    b: 2,
-    c: 3,
+    text: "hello",
 };
 observe(data);
 const updateComponent = () => {
-    console.log(data.a + data.b);
+    let i = 1000000000;
+    while (i) {
+        i--;
+    }
+    document.getElementById("root").innerText = data.text;
 };
 
 new Watcher(updateComponent);
 
-const updateComponent2 = () => {
-    console.log(data.c);
+const updateData = () => {
+    data.text = "liang";
+    console.log(document.getElementById("root").innerText);
+    const cb = () => {
+        data.text = "tick";
+        console.log(document.getElementById("root").innerText);
+    };
+    nextTick(cb);
 };
-new Watcher(updateComponent2);
+const updateData2 = async () => {
+    data.text = "liang";
+    console.log(document.getElementById("root").innerText);
+    await nextTick();
+    console.log(document.getElementById("root").innerText);
+};
 
-data.a = 2;
-data.a = 3;
-data.b = 4;
+updateData();
 
-data.c = 5;
+setTimeout(() => {
+    alert(2);
+}, 0);
+// const p = Promise.resolve();
+// p.then(() => {
+//     document.getElementById("root").innerText = "promise";
+// });

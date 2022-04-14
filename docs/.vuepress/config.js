@@ -75,6 +75,10 @@ module.exports = {
                         title: "9.响应式系统之异步队列",
                         path: "/posts/Vue2剥丝抽茧-响应式系统之异步队列",
                     },
+                    {
+                        title: "10.响应式系统之nextTick",
+                        path: "/posts/Vue2剥丝抽茧-响应式系统之nextTick",
+                    },
                 ],
             },
         ],

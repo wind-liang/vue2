@@ -1,3 +1,4 @@
+import { nextTick } from "./next-tick";
 const queue = [];
 let has = {};
 let waiting = false;
@@ -47,7 +48,7 @@ export function queueWatcher(watcher) {
         // queue the flush
         if (!waiting) {
             waiting = true;
-            setTimeout(flushSchedulerQueue, 0);
+            nextTick(flushSchedulerQueue);
         }
     }
 }

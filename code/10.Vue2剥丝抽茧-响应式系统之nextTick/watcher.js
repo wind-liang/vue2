@@ -89,6 +89,7 @@ export default class Watcher {
      * Will be called by the scheduler.
      */
     run() {
+        alert("1");
         this.get();
     }
 }
