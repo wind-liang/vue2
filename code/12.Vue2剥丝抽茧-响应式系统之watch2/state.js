@@ -1,5 +1,5 @@
 import Watcher from "./watcher";
-import { pushTarget, popTarget } from "./dep";
+import { isPlainObject } from "./util";
 
 export function initWatch(data, watch) {
     for (const key in watch) {
@@ -14,19 +14,19 @@ export function initWatch(data, watch) {
     }
 }
 
-function createWatcher(data, expOrFn, handler) {
-    return $watch(data, expOrFn, handler);
+function createWatcher(data, expOrFn, handler, options) {
+    if (isPlainObject(handler)) {
+        options = handler;
+        handler = handler.handler;
+    }
+    return $watch(data, expOrFn, handler, options);
 }
 
-function $watch(data, expOrFn, handler) {
+function $watch(data, expOrFn, handler, options) {
     const watcher = new Watcher(data, expOrFn, handler);
-    // if (options.immediate) {
-    //     pushTarget();
-    //     watcher.value
-    //         ? handler.apply(data, [watcher.value])
-    //         : handler.call(data);
-    //     popTarget();
-    // }
+    if (options.immediate) {
+        handler.call(data, watcher.value);
+    }
     return function unwatchFn() {
         watcher.teardown();
     };
