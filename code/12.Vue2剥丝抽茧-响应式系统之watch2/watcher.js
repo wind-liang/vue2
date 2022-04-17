@@ -1,6 +1,8 @@
 import { pushTarget, popTarget } from "./dep";
 import { queueWatcher } from "./scheduler";
 import { parsePath } from "./util";
+import { traverse } from "./traverse";
+
 let uid = 0;
 
 export default class Watcher {
@@ -19,6 +21,7 @@ export default class Watcher {
         this.cb = cb;
         // options
         if (options) {
+            this.deep = !!options.deep;
             this.sync = !!options.sync;
         }
         this.value = this.get();
@@ -35,6 +38,11 @@ export default class Watcher {
         } catch (e) {
             throw e;
         } finally {
+            // "touch" every property so they are all tracked as
+            // dependencies for deep watching
+            if (this.deep) {
+                traverse(value);
+            }
             popTarget();
             this.cleanupDeps();
         }
@@ -97,7 +105,7 @@ export default class Watcher {
      */
     run() {
         const value = this.get();
-        if (value !== this.value) {
+        if (value !== this.value || this.deep) {
             // set new value
             const oldValue = this.value;
             this.value = value;

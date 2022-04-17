@@ -83,6 +83,10 @@ module.exports = {
                         title: "11.响应式系统之watch",
                         path: "/posts/Vue2剥丝抽茧-响应式系统之watch",
                     },
+                    {
+                        title: "12.响应式系统之watch2",
+                        path: "/posts/Vue2剥丝抽茧-响应式系统之watch2",
+                    },
                 ],
             },
         ],

@@ -23,7 +23,7 @@ function createWatcher(data, expOrFn, handler, options) {
 }
 
 function $watch(data, expOrFn, handler, options) {
-    const watcher = new Watcher(data, expOrFn, handler);
+    const watcher = new Watcher(data, expOrFn, handler, options);
     if (options.immediate) {
         handler.call(data, watcher.value);
     }

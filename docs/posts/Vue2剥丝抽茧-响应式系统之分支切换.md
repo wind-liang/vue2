@@ -385,3 +385,36 @@ data.text = "hello, liang"; // updateComponent 会执行吗？
 不知道看到这里大家有没有一个疑问，我是一直没想到说服我的点，欢迎一起交流：
 
 在解决去重问题上，我们是引入了 `id` ，但如果直接用 `set` 其实就可以。在  `Watcher` 类中是用 `Set` 来存 `id` ，用数组来存 `Dep` 对象，为什么不直接用 `Set` 来存 `Dep` 对象呢？
+
+`2022.4.17` 更新，之前漏看了 `Set` 的导入，之所以用数组其实是为了兼容性，`Set` 实现了简易版的 `polyfill`，降级后的 `Set` 仅支持存数字和字符串。
+
+看下边的代码应该就理解了。
+
+```js
+// src/core/util/env.js
+let _Set
+/* istanbul ignore if */ // $flow-disable-line
+if (typeof Set !== 'undefined' && isNative(Set)) {
+  // use native Set when available.
+  _Set = Set
+} else {
+  // a non-standard Set polyfill that only works with primitive keys.
+  _Set = class Set implements SimpleSet {
+    set: Object;
+    constructor () {
+      this.set = Object.create(null)
+    }
+    has (key: string | number) {
+      return this.set[key] === true
+    }
+    add (key: string | number) {
+      this.set[key] = true
+    }
+    clear () {
+      this.set = Object.create(null)
+    }
+  }
+}
+export { _Set }
+```
+
