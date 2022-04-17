@@ -10,44 +10,31 @@
 // }, 1000);
 
 import { observe } from "./reactive";
-import Watcher from "./watcher";
-import { nextTick } from "./next-tick";
-const data = {
-    text: "hello",
+import { initWatch } from "./state";
+const options = {
+    data: {
+        first: {
+            text: "hello",
+        },
+        title: "liang",
+    },
+    watch: {
+        "first.text": [
+            function (newVal, oldVal) {
+                console.log("收到变化", newVal, oldVal);
+            },
+            function (newVal, oldVal) {
+                console.log("收到变化2", newVal, oldVal);
+            },
+        ],
+        title(newVal, oldVal) {
+            console.log("收到变化", newVal, oldVal);
+        },
+    },
 };
-observe(data);
-const updateComponent = () => {
-    let i = 1000000000;
-    while (i) {
-        i--;
-    }
-    document.getElementById("root").innerText = data.text;
-};
+observe(options.data);
+initWatch(options.data, options.watch);
 
-new Watcher(updateComponent);
+options.data.first.text = "changeText";
 
-const updateData = () => {
-    data.text = "liang";
-    console.log(document.getElementById("root").innerText);
-    const cb = () => {
-        data.text = "tick";
-        console.log(document.getElementById("root").innerText);
-    };
-    nextTick(cb);
-};
-const updateData2 = async () => {
-    data.text = "liang";
-    console.log(document.getElementById("root").innerText);
-    await nextTick();
-    console.log(document.getElementById("root").innerText);
-};
-
-updateData();
-
-setTimeout(() => {
-    alert(2);
-}, 0);
-// const p = Promise.resolve();
-// p.then(() => {
-//     document.getElementById("root").innerText = "promise";
-// });
+options.data.title = "changeTitle";

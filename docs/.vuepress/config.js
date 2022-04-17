@@ -79,6 +79,10 @@ module.exports = {
                         title: "10.响应式系统之nextTick",
                         path: "/posts/Vue2剥丝抽茧-响应式系统之nextTick",
                     },
+                    {
+                        title: "11.响应式系统之watch",
+                        path: "/posts/Vue2剥丝抽茧-响应式系统之watch",
+                    },
                 ],
             },
         ],

@@ -1,20 +1,27 @@
 import { pushTarget, popTarget } from "./dep";
 import { queueWatcher } from "./scheduler";
+import { parsePath } from "./util";
 let uid = 0;
 
 export default class Watcher {
-    constructor(Fn, options) {
-        this.getter = Fn;
+    constructor(data, expOrFn, cb, options) {
+        this.data = data;
+        if (typeof expOrFn === "function") {
+            this.getter = expOrFn;
+        } else {
+            this.getter = parsePath(expOrFn);
+        }
         this.depIds = new Set(); // 拥有 has 函数可以判断是否存在某个 id
         this.deps = [];
         this.newDeps = []; // 记录新一次的依赖
         this.newDepIds = new Set();
         this.id = ++uid; // uid for batching
+        this.cb = cb;
         // options
         if (options) {
             this.sync = !!options.sync;
         }
-        this.get();
+        this.value = this.get();
     }
 
     /**
@@ -24,7 +31,7 @@ export default class Watcher {
         pushTarget(this); // 保存包装了当前正在执行的函数的 Watcher
         let value;
         try {
-            value = this.getter.call();
+            value = this.getter.call(this.data, this.data);
         } catch (e) {
             throw e;
         } finally {
@@ -89,7 +96,12 @@ export default class Watcher {
      * Will be called by the scheduler.
      */
     run() {
-        alert("1");
-        this.get();
+        const value = this.get();
+        if (value !== this.value) {
+            // set new value
+            const oldValue = this.value;
+            this.value = value;
+            this.cb.call(this.data, value, oldValue);
+        }
     }
 }
