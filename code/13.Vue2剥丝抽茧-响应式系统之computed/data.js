@@ -1,45 +1,77 @@
 import { observe } from "./reactive";
-import { initWatch } from "./state";
+import { initComputed } from "./state";
+import Watcher from "./watcher";
 const options = {
     data: {
-        info: {
-            name: {
-                firstName: "wind",
-                secondName: "liang",
-            },
-        },
+        firstName: "wind",
+        secondName: "liang",
+        title: "标题",
     },
-    watch: {
-        "info.name": {
-            handler(newVal, oldVal) {
-                console.log("收到变化", newVal, oldVal);
+    computed: {
+        name() {
+            console.log("name我执行啦！");
+            return this.firstName + this.secondName;
+        },
+
+        test: {
+            get() {
+                return this.title;
             },
-            deep: true,
+            set() {
+                console.log("set");
+            },
         },
     },
 };
 observe(options.data);
-initWatch(options.data, options.watch);
+initComputed(options.data, options.computed);
 
-options.data.info = {
-    name: {
-        firstName: "wind2",
-        secondName: "liang2",
-    },
+const updateComponent = () => {
+    console.log("updateComponent执行啦！");
+    document.getElementById("root").innerText =
+        options.data.name + options.data.title;
 };
+
+new Watcher(options.data, updateComponent);
+options.data.test = "a";
+// setTimeout(() => {
+//     options.data.firstName = "wind2";
+// }, 1000);
 
 // setTimeout(() => {
-//     options.data.info.name = {
-//         firstName: "wind2",
-//         secondName: "liang2",
-//     };
-// }, 0);
+//     options.data.title = "修改标题";
+//     setTimeout(() => {
+//         options.data.firstName = "wind2";
+//     }, 1000);
+// }, 1000);
 
-options.data.info.name = {
-    firstName: "wind2",
-    secondName: "liang2",
-};
+// const options = {
+//     data: {
+//         firstName: "wind",
+//         secondName: "liang",
+//     },
+//     computed: {
+//         name() {
+//             console.log("name我执行啦！");
+//             return this.firstName + this.secondName;
+//         },
+//     },
+// };
+// observe(options.data);
 
-setTimeout(() => {
-    options.data.info.name.firstName = "wind3";
-}, 0);
+// const noop = () => {};
+// const watcher = new Watcher(options.data, options.computed.name, noop, {
+//     lazy: true,
+// });
+// console.log(watcher.value);
+// watcher.evaluate();
+// console.log(watcher.value);
+
+// console.log("修改 firstName 的值");
+// options.data.firstName = "wind2";
+// setTimeout(() => {
+//     if (watcher.dirty) {
+//         watcher.evaluate();
+//     }
+//     console.log(watcher.value);
+// });

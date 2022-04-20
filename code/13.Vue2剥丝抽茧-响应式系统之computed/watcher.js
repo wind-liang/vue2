@@ -23,8 +23,10 @@ export default class Watcher {
         if (options) {
             this.deep = !!options.deep;
             this.sync = !!options.sync;
+            this.lazy = !!options.lazy;
         }
-        this.value = this.get();
+        this.dirty = this.lazy;
+        this.value = this.lazy ? undefined : this.get();
     }
 
     /**
@@ -92,7 +94,9 @@ export default class Watcher {
      * Will be called when a dependency changes.
      */
     update() {
-        if (this.sync) {
+        if (this.lazy) {
+            this.dirty = true;
+        } else if (this.sync) {
             this.run();
         } else {
             queueWatcher(this);
@@ -110,6 +114,24 @@ export default class Watcher {
             const oldValue = this.value;
             this.value = value;
             this.cb.call(this.data, value, oldValue);
+        }
+    }
+
+    /**
+     * Evaluate the value of the watcher.
+     * This only gets called for lazy watchers.
+     */
+    evaluate() {
+        this.value = this.get();
+        this.dirty = false;
+    }
+    /**
+     * Depend on all deps collected by this watcher.
+     */
+    depend() {
+        let i = this.deps.length;
+        while (i--) {
+            this.deps[i].depend();
         }
     }
 }
