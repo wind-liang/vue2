@@ -6,8 +6,8 @@ import { traverse } from "./traverse";
 let uid = 0;
 
 export default class Watcher {
-    constructor(data, expOrFn, cb, options) {
-        this.data = data;
+    constructor(vm, expOrFn, cb, options) {
+        this.vm = vm;
         if (typeof expOrFn === "function") {
             this.getter = expOrFn;
         } else {
@@ -36,7 +36,7 @@ export default class Watcher {
         pushTarget(this); // 保存包装了当前正在执行的函数的 Watcher
         let value;
         try {
-            value = this.getter.call(this.data, this.data);
+            value = this.getter.call(this.vm, this.vm);
         } catch (e) {
             throw e;
         } finally {
@@ -113,7 +113,7 @@ export default class Watcher {
             // set new value
             const oldValue = this.value;
             this.value = value;
-            this.cb.call(this.data, value, oldValue);
+            this.cb.call(this.vm, value, oldValue);
         }
     }
 

@@ -3,19 +3,7 @@ import Dep, { pushTarget, popTarget } from "../observer/dep";
 
 import { set, del, observe, defineReactive } from "../observer/index";
 
-import {
-    // warn,
-    bind,
-    noop,
-    hasOwn,
-    isReserved,
-    // handleError,
-    // nativeWatch,
-    // validateProp,
-    isPlainObject,
-    // isServerRendering,
-    // invokeWithErrorHandling
-} from "../util/index";
+import { bind, noop, hasOwn, isReserved, isPlainObject } from "../util/index";
 
 const sharedPropertyDefinition = {
     enumerable: true,
@@ -35,39 +23,16 @@ export function proxy(target, sourceKey, key) {
 }
 
 export function initState(vm) {
-    // vm._watchers = []
     const opts = vm.$options;
-    // if (opts.props) initProps(vm, opts.props)
     if (opts.methods) initMethods(vm, opts.methods);
     if (opts.data) {
         initData(vm);
     } else {
         observe((vm._data = {}));
     }
-    // if (opts.computed) initComputed(vm, opts.computed)
-    // if (opts.watch && opts.watch !== nativeWatch) {
-    //   initWatch(vm, opts.watch)
-    // }
-}
-
-function initProps(vm, propsOptions) {
-    const propsData = vm.$options.propsData || {};
-    const props = (vm._props = {});
-    // cache prop keys so that future props updates can iterate using Array
-    // instead of dynamic object key enumeration.
-    const keys = (vm.$options._propKeys = []);
-    const isRoot = !vm.$parent;
-    // root instance props should be converted
-    for (const key in propsOptions) {
-        keys.push(key);
-        const value = validateProp(key, propsOptions, propsData, vm);
-        defineReactive(props, key, value);
-        // static props are already proxied on the component's prototype
-        // during Vue.extend(). We only need to proxy props defined at
-        // instantiation here.
-        if (!(key in vm)) {
-            proxy(vm, `_props`, key);
-        }
+    if (opts.computed) initComputed(vm, opts.computed);
+    if (opts.watch) {
+        initWatch(vm, opts.watch);
     }
 }
 
@@ -122,80 +87,36 @@ export function getData(data, vm) {
 
 const computedWatcherOptions = { lazy: true };
 
-function initComputed(vm, computed) {
-    // $flow-disable-line
+// computed properties are just getters during SSR
+export function initComputed(vm, computed) {
     const watchers = (vm._computedWatchers = Object.create(null));
-    // computed properties are just getters during SSR
-    const isSSR = isServerRendering();
 
     for (const key in computed) {
         const userDef = computed[key];
         const getter = typeof userDef === "function" ? userDef : userDef.get;
-        if (process.env.NODE_ENV !== "production" && getter == null) {
-            warn(`Getter is missing for computed property "${key}".`, vm);
-        }
-
-        if (!isSSR) {
-            // create internal watcher for the computed property.
-            watchers[key] = new Watcher(
-                vm,
-                getter || noop,
-                noop,
-                computedWatcherOptions
-            );
-        }
+        // create internal watcher for the computed property.
+        watchers[key] = new Watcher(
+            vm,
+            getter || noop,
+            noop,
+            computedWatcherOptions
+        );
 
         // component-defined computed properties are already defined on the
         // component prototype. We only need to define computed properties defined
         // at instantiation here.
-        if (!(key in vm)) {
-            defineComputed(vm, key, userDef);
-        } else if (process.env.NODE_ENV !== "production") {
-            if (key in vm.$data) {
-                warn(
-                    `The computed property "${key}" is already defined in data.`,
-                    vm
-                );
-            } else if (vm.$options.props && key in vm.$options.props) {
-                warn(
-                    `The computed property "${key}" is already defined as a prop.`,
-                    vm
-                );
-            } else if (vm.$options.methods && key in vm.$options.methods) {
-                warn(
-                    `The computed property "${key}" is already defined as a method.`,
-                    vm
-                );
-            }
-        }
+        defineComputed(vm, key, userDef);
     }
 }
-
 export function defineComputed(target, key, userDef) {
-    const shouldCache = !isServerRendering();
     if (typeof userDef === "function") {
-        sharedPropertyDefinition.get = shouldCache
-            ? createComputedGetter(key)
-            : createGetterInvoker(userDef);
+        sharedPropertyDefinition.get = createComputedGetter(key);
         sharedPropertyDefinition.set = noop;
     } else {
         sharedPropertyDefinition.get = userDef.get
-            ? shouldCache && userDef.cache !== false
-                ? createComputedGetter(key)
-                : createGetterInvoker(userDef.get)
+            ? createComputedGetter(key)
             : noop;
         sharedPropertyDefinition.set = userDef.set || noop;
-    }
-    if (
-        process.env.NODE_ENV !== "production" &&
-        sharedPropertyDefinition.set === noop
-    ) {
-        sharedPropertyDefinition.set = function () {
-            warn(
-                `Computed property "${key}" was assigned to but it has no setter.`,
-                this
-            );
-        };
     }
     Object.defineProperty(target, key, sharedPropertyDefinition);
 }
@@ -214,13 +135,6 @@ function createComputedGetter(key) {
         }
     };
 }
-
-function createGetterInvoker(fn) {
-    return function computedGetter() {
-        return fn.call(this, this);
-    };
-}
-
 function initMethods(vm, methods) {
     const props = vm.$options.props;
     for (const key in methods) {
@@ -267,24 +181,7 @@ export function stateMixin(Vue) {
     dataDef.get = function () {
         return this._data;
     };
-    const propsDef = {};
-    propsDef.get = function () {
-        return this._props;
-    };
-    if (process.env.NODE_ENV !== "production") {
-        dataDef.set = function () {
-            warn(
-                "Avoid replacing instance root $data. " +
-                    "Use nested data properties instead.",
-                this
-            );
-        };
-        propsDef.set = function () {
-            warn(`$props is readonly.`, this);
-        };
-    }
     Object.defineProperty(Vue.prototype, "$data", dataDef);
-    Object.defineProperty(Vue.prototype, "$props", propsDef);
 
     Vue.prototype.$set = set;
     Vue.prototype.$delete = del;
@@ -300,11 +197,10 @@ export function stateMixin(Vue) {
         if (options.immediate) {
             const info = `callback for immediate watcher "${watcher.expression}"`;
             pushTarget();
-            invokeWithErrorHandling(cb, vm, [watcher.value], vm, info);
+            watcher.value
+                ? cb.apply(vm, [watcher.value])
+                : handler.call(context);
             popTarget();
         }
-        return function unwatchFn() {
-            watcher.teardown();
-        };
     };
 }

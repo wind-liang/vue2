@@ -1,17 +1,11 @@
-import { initMixin } from './init'
-// import { stateMixin } from './state'
-// import { renderMixin } from './render'
-// import { eventsMixin } from './events'
-// import { lifecycleMixin } from './lifecycle'
+import { initMixin } from "./init";
+import { stateMixin } from "./state";
 
-function Vue (options) {
-  this._init(options)
+function Vue(options) {
+    this._init(options);
 }
 
-initMixin(Vue)
-// stateMixin(Vue)
-// eventsMixin(Vue)
-// lifecycleMixin(Vue)
-// renderMixin(Vue)
+initMixin(Vue);
+stateMixin(Vue);
 
-export default Vue
+export default Vue;
