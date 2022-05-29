@@ -73,15 +73,10 @@ function initData(vm) {
 }
 
 export function getData(data, vm) {
-    // #7573 disable dep collection when invoking data getters
-    pushTarget();
     try {
         return data.call(vm, vm);
     } catch (e) {
-        handleError(e, vm, `data()`);
         return {};
-    } finally {
-        popTarget();
     }
 }
 
@@ -136,7 +131,6 @@ function createComputedGetter(key) {
     };
 }
 function initMethods(vm, methods) {
-    const props = vm.$options.props;
     for (const key in methods) {
         vm[key] =
             typeof methods[key] !== "function" ? noop : bind(methods[key], vm);

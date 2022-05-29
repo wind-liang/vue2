@@ -93,6 +93,16 @@ module.exports = {
                     },
                 ],
             },
+            {
+                title: "从零手写Vue",
+                collapsable: false, // 不折叠
+                children: [
+                    {
+                        title: "1.响应式系统-VueLiang0",
+                        path: "/posts/Vue2剥丝抽茧-VueLiang0",
+                    },
+                ],
+            },
         ],
         footer: {
             // 页脚信息
