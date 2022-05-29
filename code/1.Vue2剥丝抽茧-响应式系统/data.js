@@ -13,5 +13,3 @@ const updateComponent = () => {
 new Watcher(updateComponent);
 
 data.text = "hello, liang";
-
-data.text = "hello, liang2";

@@ -37,8 +37,6 @@ export function defineReactive(obj, key, val, shallow) {
             return value;
         },
         set: function reactiveSetter(newVal) {
-            const value = getter ? getter.call(obj) : val;
-
             if (setter) {
                 setter.call(obj, newVal);
             } else {
