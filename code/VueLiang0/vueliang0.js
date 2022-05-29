@@ -1,22 +1,48 @@
-import Vue from './src/core/index'
+import Vue from "./src/core/index";
 
 new Vue({
-    data(){
+    el: "#root",
+    data() {
         return {
-            test: 1
-        }
+            test: 1,
+            name: "data:liang",
+        };
+    },
+    watch: {
+        test(newVal, oldVal) {
+            console.log(newVal, oldVal);
+        },
+    },
+    computed: {
+        text() {
+            return "computed:hello:" + this.name;
+        },
     },
     methods: {
-        hello(){
-            return 'hello'
+        hello() {
+            return "调用methods:hello";
         },
         click() {
-            console.log('ylog:14-da9b7d-click')
             this.test = 3;
-        }
+            this.name = "wind";
+        },
     },
-    render(){
-        document.write(`<div id="test">${this.test} ${this.hello()}</div>`);
-        document.getElementById('test').addEventListener("click",this.click)
-    }
-})
+    render() {
+        const node = document.createElement("div");
+
+        const dataNode = document.createElement("div");
+        dataNode.innerText = this.test;
+        node.append(dataNode);
+
+        const computedNode = document.createElement("div");
+        computedNode.innerText = this.text;
+        node.append(computedNode);
+
+        const methodsNode = document.createElement("div");
+        methodsNode.innerText = this.hello();
+        node.append(methodsNode);
+
+        node.addEventListener("click", this.click);
+        return node;
+    },
+});
