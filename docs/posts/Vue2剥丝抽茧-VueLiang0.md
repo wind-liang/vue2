@@ -398,7 +398,11 @@ new Vue({
 
 ![Kapture 2022-05-29 at 13.01.11](https://windliangblog.oss-cn-beijing.aliyuncs.com/windliangblog.oss-cn-beijing.aliyuncs.comKapture%202022-05-29%20at%2013.01.11.gif)
 
-当我们点击的时候视图就自动进行了更新，简化的响应式系统就被我们实现了。
+控制台也有 `watch` 输出的值：
+
+![image-20220529220708519](https://windliangblog.oss-cn-beijing.aliyuncs.com/windliangblog.oss-cn-beijing.aliyuncs.comimage-20220529220708519.png)
+
+当我们点击的时候视图就自动进行了更新，`watch` 也进行了回调，简化的响应式系统就被我们实现了。
 
 # 总
 
