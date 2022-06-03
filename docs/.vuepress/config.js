@@ -94,14 +94,29 @@ module.exports = {
                 ],
             },
             {
+                title: "虚拟dom",
+                collapsable: false, // 不折叠
+                children: [
+                    {
+                        title: "15.虚拟dom",
+                        path: "/posts/Vue2剥丝抽茧-虚拟dom简介",
+                    },
+                ],
+            },
+            {
                 title: "从零手写Vue",
                 collapsable: false, // 不折叠
                 children: [
                     {
-                        title: "1.响应式系统-VueLiang0",
+                        title: "14.响应式系统-VueLiang0",
                         path: "/posts/Vue2剥丝抽茧-VueLiang0",
                     },
                 ],
+            },
+            {
+                title: "文章全部源码",
+                collapsable: false, // 不折叠
+                path: "/",
             },
         ],
         footer: {
