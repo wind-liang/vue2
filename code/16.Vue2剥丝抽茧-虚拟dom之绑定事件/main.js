@@ -1,4 +1,5 @@
 import * as nodeOps from "./node-ops";
+import modules from "./modules";
 import { createPatchFunction } from "./patch";
 import { createElement } from "./create-element";
 
@@ -9,10 +10,16 @@ const options = {
         text2: "2",
     },
     render(createElement) {
-        const test = createElement("div", [
-            this.text,
-            createElement("div", this.text2),
-        ]);
+        const test = createElement(
+            "div",
+            {
+                on: {
+                    click: () => console.log(1),
+                    dblclick: () => console.log(2),
+                },
+            },
+            [this.text, createElement("div", this.text2)]
+        );
         return test;
     },
 };
@@ -24,7 +31,7 @@ const _render = function () {
 
 const $el = document.querySelector(options.el);
 
-const __patch__ = createPatchFunction({ nodeOps });
+const __patch__ = createPatchFunction({ nodeOps, modules });
 
 function _update(vnode) {
     __patch__($el, vnode);

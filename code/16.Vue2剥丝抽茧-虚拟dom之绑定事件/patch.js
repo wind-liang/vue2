@@ -2,9 +2,22 @@ import VNode from "./vnode";
 import { isDef } from "./util";
 
 export const emptyNode = new VNode("", {}, []);
+const hooks = ["create", "activate", "update", "remove", "destroy"];
 
 export function createPatchFunction(backend) {
-    const { nodeOps } = backend;
+    let i, j;
+    const cbs = {};
+
+    const { modules, nodeOps } = backend;
+
+    for (i = 0; i < hooks.length; ++i) {
+        cbs[hooks[i]] = [];
+        for (j = 0; j < modules.length; ++j) {
+            if (isDef(modules[j][hooks[i]])) {
+                cbs[hooks[i]].push(modules[j][hooks[i]]);
+            }
+        }
+    }
 
     function emptyNodeAt(elm) {
         return new VNode(
@@ -24,11 +37,15 @@ export function createPatchFunction(backend) {
         }
     }
     function createElm(vnode, parentElm, refElm) {
+        const data = vnode.data; // dom 相关的属性都放到 data 中
         const children = vnode.children;
         const tag = vnode.tag;
         if (isDef(tag)) {
             vnode.elm = nodeOps.createElement(tag);
             createChildren(vnode, children);
+            if (isDef(data)) {
+                invokeCreateHooks(vnode);
+            }
             insert(parentElm, vnode.elm, refElm);
         } else {
             vnode.elm = nodeOps.createTextNode(vnode.text);
@@ -52,6 +69,12 @@ export function createPatchFunction(backend) {
             for (let i = 0; i < children.length; ++i) {
                 createElm(children[i], vnode.elm);
             }
+        }
+    }
+
+    function invokeCreateHooks(vnode) {
+        for (let i = 0; i < cbs.create.length; ++i) {
+            cbs.create[i](emptyNode, vnode);
         }
     }
 
