@@ -17,6 +17,7 @@ module.exports = {
     themeConfig: {
         search: false,
         lastUpdated: "Last Updated",
+        sidebarDepth: 0,
         nav: [
             { text: "Home", link: "/", icon: "fa fa-home" },
             {
@@ -100,6 +101,10 @@ module.exports = {
                     {
                         title: "15.虚拟dom",
                         path: "/posts/Vue2剥丝抽茧-虚拟dom简介",
+                    },
+                    {
+                        title: "16.虚拟dom之事件绑定",
+                        path: "/posts/Vue2剥丝抽茧-虚拟dom之绑定事件",
                     },
                 ],
             },
