@@ -8,7 +8,7 @@ date: 2022-04-11 09:40:33
 
 Vue2 源码从零详解系列文章， 还没有看过的同学可能需要看一下之前的，[vue.windliang.wang/](https://vue.windliang.wang/)
 
-# 场景
+## 场景
 
 ```js
 import { observe } from "./reactive";
@@ -46,7 +46,7 @@ data.c = 5;
 
  试想一下如果这里的 `console.log` 是渲染页面，那改变一次值就刷新一下页面，会造成严重的性能问题，页面也会不停的改变。
 
-# 解决方案
+## 解决方案
 
 我们可以通过一个队列，收集所有的 `Watcher` 。
 
@@ -54,7 +54,7 @@ data.c = 5;
 
 为了等所有的 `Watcher` 都收集完毕，可以将 `Watcher` 的执行放到 `setTimeout` 中。这样当主线程全部执行后，才会去执行 `Watcher` 队列。
 
-# 代码实现
+## 代码实现
 
 我们可以给每一个 `Watcher` 加上一个 `id`，如果队列中已经有 `id` 了就不加入队列。
 
@@ -153,7 +153,7 @@ function resetSchedulerState() {
 
 总体上就是上边的样子了。
 
-# 执行结果
+## 执行结果
 
 ```js
 import { observe } from "./reactive";
@@ -187,6 +187,6 @@ data.c = 5;
 
 ![image-20220412094724249](https://windliangblog.oss-cn-beijing.aliyuncs.com/windliangblog.oss-cn-beijing.aliyuncs.comimage-20220412094724249.png)
 
-# 总
+## 总
 
 通过异步的一个队列，当所有 `Watcher` 收集完毕后统一执行，进行了性能方面的优化。

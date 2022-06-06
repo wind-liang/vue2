@@ -8,7 +8,7 @@ date: 2022-03-27 15:14:19
 
 目前工作中大概有 `40%` 的需求是在用 `Vue2` 的技术栈，所谓知其然更要知其所以然，为了更好的使用 `Vue` 、更快的排查问题，最近学习了源码相关的一些知识，虽然网上总结 `Vue` 的很多很多了，不少自己一个，但也不多自己一个，欢迎一起讨论学习，发现问题欢迎指出。
 
-# 响应式系统要干什么
+## 响应式系统要干什么
 
 回到最简单的代码：
 
@@ -44,7 +44,7 @@ data.text = 'hello, liang'
 
 在**读取数据**和**修改数据**的时候需要做额外的事情，我们可以通过 `Object.defineProperty()`  重写对象属性的 `get` 和 `set` 函数。
 
-# 响应式数据
+## 响应式数据
 
 我们来写一个函数，重写属性的 `get` 和 `set` 函数。
 
@@ -120,7 +120,7 @@ Dep.target = null; // 静态变量，全局唯一
 
 我们将当前执行的函数保存到 `Dep` 类的 `target` 变量上。
 
-# 保存当前正在执行的函数
+## 保存当前正在执行的函数
 
 为了保存当前的函数，我们还需要写一个 `Watcher` 类，将需要执行的函数传入，保存到 `Watcher` 类中的 `getter` 属性中，然后交由 `Watcher` 类负责执行。
 
@@ -182,7 +182,7 @@ export default class Watcher {
 
 如果未来修改对象属性的值，会触发对象属性的 `set` ，接着就会调用之前收集到的 `Watcher` 对象，通过 `Watcher` 对象的 `uptate` 方法，来调用最初执行的函数。
 
-# 响应式数据
+## 响应式数据
 
 回到我们之前没写完的 `defineReactive` 函数，按照上边的思路，我们来补全一下。
 
@@ -234,7 +234,7 @@ export function defineReactive(obj, key, val) {
 
 ```
 
-# Observer 对象
+## Observer 对象
 
 我们再写一个 `Observer` 方法，把对象的全部属性都变成响应式的。
 
@@ -266,7 +266,7 @@ export function observe(value) {
 }
 ```
 
-# 测试
+## 测试
 
 将上边的方法引入到文章最开头的例子，来执行一下：
 
@@ -298,7 +298,7 @@ data.text = "hello, liang";
 
 说明我们的响应式系统成功了。
 
-# 总
+## 总
 
 ![image-20220329092722630](https://windliangblog.oss-cn-beijing.aliyuncs.com/windliangblog.oss-cn-beijing.aliyuncs.comimage-20220329092722630.png)
 

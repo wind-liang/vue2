@@ -8,7 +8,7 @@ date: 2022-04-05 18:15:33
 
 接 [Vue2剥丝抽茧-响应式系统](https://windliang.wang/2022/03/27/Vue2%E5%89%A5%E4%B8%9D%E6%8A%BD%E8%8C%A7-%E5%93%8D%E5%BA%94%E5%BC%8F%E7%B3%BB%E7%BB%9F/)、[Vue2剥丝抽茧-响应式系统之分支切换](https://windliang.wang/2022/03/31/Vue2%E5%89%A5%E4%B8%9D%E6%8A%BD%E8%8C%A7-%E5%93%8D%E5%BA%94%E5%BC%8F%E7%B3%BB%E7%BB%9F%E4%B9%8B%E5%88%86%E6%94%AF%E5%88%87%E6%8D%A2/)，[响应式系统之嵌套 ](https://vue.windliang.wang/posts/Vue2%E5%89%A5%E4%B8%9D%E6%8A%BD%E8%8C%A7-%E5%93%8D%E5%BA%94%E5%BC%8F%E7%B3%BB%E7%BB%9F%E4%B9%8B%E5%B5%8C%E5%A5%97.html)、[响应式系统之深度响应](https://vue.windliang.wang/posts/Vue2%E5%89%A5%E4%B8%9D%E6%8A%BD%E8%8C%A7-%E5%93%8D%E5%BA%94%E5%BC%8F%E7%B3%BB%E7%BB%9F%E4%B9%8B%E6%B7%B1%E5%BA%A6%E5%93%8D%E5%BA%94.html) 还没有看过的同学需要看一下。
 
-# 场景
+## 场景
 
 ```js
 import { observe } from "./reactive";
@@ -35,7 +35,7 @@ data.list = ["hello", "liang"];
 
 ![image-20220405184002118](https://windliangblog.oss-cn-beijing.aliyuncs.com/windliangblog.oss-cn-beijing.aliyuncs.comimage-20220405184002118.png)
 
-# 场景 2
+## 场景 2
 
 ```js
 import { observe } from "./reactive";
@@ -60,7 +60,7 @@ data.list.push("liang");
 
 这次是调用 `push` 方法，但我们对 `push` 方法什么都没做，因此就不会触发 `Watcher` 了。
 
-# 方案
+## 方案
 
 为了让 `push` 还有数组的其他方法也生效，我们需要去重写它们，通过 [代理模式](https://pattern.windliang.wang/posts/%E5%89%8D%E7%AB%AF%E7%9A%84%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%B3%BB%E5%88%97-%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F.html)，我们可以将数组的原方法先保存起来，然后执行，并且加上自己额外的操作。
 
@@ -183,7 +183,7 @@ new Watcher(updateComponent);
 
 这样当我们调用数组方法去修改 `['hello']` 的值的时候，去通知 `Observer` 中的 `Dep` 就可以了。
 
-# 收集依赖代码实现
+## 收集依赖代码实现
 
 按照上边的思路，完善一下 `Observer` 类。
 
@@ -254,7 +254,7 @@ export function defineReactive(obj, key, val, shallow) {
 }
 ```
 
-# 通知依赖代码实现
+## 通知依赖代码实现
 
 我们已经重写了 `array` 方法，但直接覆盖全局的 `arrray` 方法肯定是不好的，我们可以在 `Observer` 类中去操作，如果当前 `value` 是数组，就去拦截它的 `array` 方法。
 
@@ -382,7 +382,7 @@ methodsToPatch.forEach(function (method) {
 
 ```
 
-# 测试
+## 测试
 
 ```js
 import { observe } from "./reactive";
@@ -407,7 +407,7 @@ data.list.push("liang");
 
 ![image-20220405205545348](https://windliangblog.oss-cn-beijing.aliyuncs.com/windliangblog.oss-cn-beijing.aliyuncs.comimage-20220405205545348.png)
 
-# 总
+## 总
 
 对于数组的响应式我们解决了三个问题，依赖放在哪里、收集依赖和通知依赖。
 

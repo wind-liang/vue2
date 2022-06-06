@@ -12,7 +12,7 @@ date: 2022-05-31 08:16:33
 
 这边文章主要介绍虚拟 `dom` 的定义和将虚拟 `dom` 渲染为真实 `dom` 的过程。
 
-# 虚拟 dom 定义
+## 虚拟 dom 定义
 
 虚拟 `dom` 用途就是生成真实 `dom` ，我们只需要定义一个对象结构，能通过这个对象来生成真实 `dom` 就够了。
 
@@ -169,7 +169,7 @@ export function cloneVNode(vnode) {
 
 未来的示例中可能会用到上边的一些其他属性，这里就不细说了。
 
-# 跨平台
+## 跨平台
 
 上边代码我们假设了创建元素是在浏览器中，直接使用了 `document.xxx` 方法。但如果我们想支持更多的平台，比如 [weex](https://doc.weex.io/zh/) （支持 `iOS`、`Android` 开发)，我们就不能直接使用 `document.xxx` 的形式了，需要使用 `weex` 自己所提供的语法来创建节点。
 
@@ -236,7 +236,7 @@ nodeOps.appendChild(vnode.elm, childEle);
 
 这样如果想跨平台的话，我们只需要更改 `import * as nodeOps from "./node-ops";` 这里的引入路径即可，其他代码就无需改动了。
 
-# 整体流程
+## 整体流程
 
 我们提供一个 `options` 对象，里边包含一个 `render` 方法返回 `vnode` 对象。
 
@@ -623,7 +623,7 @@ export function createPatchFunction(backend) {
 }
 ```
 
-# 测试
+## 测试
 
 首先页面提供一个 `dom` 节点用来占位：
 
@@ -697,7 +697,7 @@ _update(_render());
 
 并且原来的 ` <div id="root"></div>` 也进行了删除。
 
-# 完善 render
+## 完善 render
 
 上边 `render` 函数中我们直接返回了一个对象，
 
@@ -841,7 +841,7 @@ _update(_render());
 
 最终生成的页面和之前是完全一致的。
 
-# 总
+## 总
 
 这边文章了解了什么是虚拟 `dom` 和如何将虚拟 `dom` 渲染为真实 `dom` ，了解了 `Vue` 中生成 `dom` 的全过程。
 

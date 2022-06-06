@@ -8,7 +8,7 @@ date: 2022-04-17 08:26:33
 
 Vue2 源码从零详解系列文章， 还没有看过的同学可能需要看一下之前的，[vue.windliang.wang/](https://vue.windliang.wang/)
 
-# 场景
+## 场景
 
 ```js
 import { observe } from "./reactive";
@@ -41,7 +41,7 @@ options.data.title = "changeTitle";
 
 这篇文章来实现 `initWatch` ，因为需要用到 `data` 所以要把 `data` 传入，还有就是 `watch` 也传入。
 
-# 实现思路
+## 实现思路
 
 之前的文章我们实现了一个 `Watcher` 类。
 
@@ -103,9 +103,9 @@ run() {
 
 上边就是关键的思路的了，主要就是两件事情，把属性封装为函数来适配我们之前的 `Watcher` 系统和增加回调函数来手动执行，下边我们来具体实现一下。
 
-# 代码实现
+## 代码实现
 
-## 属性名包装为函数
+### 属性名包装为函数
 
 之前传入的是 `Fn` ，现在可能传入的是属性名，所以参数名改为 `expOrFn` ，同时将 `data` 传入。
 
@@ -177,7 +177,7 @@ get() {
 }
 ```
 
-## 增加回调函数
+### 增加回调函数
 
 我们需要增加一个回调函数，当对应的 `data` 属性改变的时候，同时去执行该回调函数。
 
@@ -219,7 +219,7 @@ run() {
 }
 ```
 
-## initWatch 函数
+### initWatch 函数
 
 `Watch` 完善后，我们就可以实现 `initWatch` 函数了。
 
@@ -244,7 +244,7 @@ function $watch(data, expOrFn, handler) {
 }
 ```
 
-# 验证
+## 验证
 
 回到开头的代码。
 
@@ -278,7 +278,7 @@ options.data.title = "changeTitle";
 
 ![image-20220417092629962](https://windliangblog.oss-cn-beijing.aliyuncs.com/windliangblog.oss-cn-beijing.aliyuncs.comimage-20220417092629962.png)
 
-# 扩展
+## 扩展
 
 我们的回调函数也可以是一个回调函数数组：
 
@@ -311,7 +311,7 @@ export function initWatch(data, watch) {
 
 ![image-20220417093034260](https://windliangblog.oss-cn-beijing.aliyuncs.com/windliangblog.oss-cn-beijing.aliyuncs.comimage-20220417093034260.png)
 
-# 总
+## 总
 
 主要利用已有的响应式系统，实现了 `watch` 功能：将属性名封装为函数去读取一次，这样相应的属性就会收集到该 `Watcher` ，属性变化去执行 `Watcher` 的时候同时执行回调函数，将新值和旧值传入。
 

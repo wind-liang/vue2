@@ -8,9 +8,9 @@ date: 2022-04-13 07:01:33
 
 Vue2 源码从零详解系列文章， 还没有看过的同学可能需要看一下之前的，[vue.windliang.wang/](https://vue.windliang.wang/)
 
-# 前置知识
+## 前置知识
 
-## dom 更新
+### dom 更新
 
 首先明确一下 `dom` 更新的概念。
 
@@ -52,7 +52,7 @@ while (true) {}
 
 此时页面就永远是空白了。但事实上**我们的 `dom` 已经更新了**，只是没有轮到渲染线程展示出来。
 
-## 只更新最后一次结果
+### 只更新最后一次结果
 
 在 `js` 线程中如果修改同一个 `dom` 元素，无论修改多少次，最终轮到渲染线程的时候，渲染线程当前读到的 `dom` 是啥就会是啥。
 
@@ -65,7 +65,7 @@ document.getElementById("root").innerText = "liang";
 
 上边 `dom` 变化了多次，但屏幕上只会看到 `liang`。
 
-## 宏任务微任务任务队列
+### 宏任务微任务任务队列
 
 这里简单说一下，不细讲了。
 
@@ -84,7 +84,7 @@ document.getElementById("root").innerText = "liang";
 
 
 
-## 让 `dom` 更新多次
+### 让 `dom` 更新多次
 
 ```js
 document.getElementById("root").innerText = "hello";
@@ -110,7 +110,7 @@ setTimeout(() => {
 
 ![Kapture 2022-04-13 at 07.51.13](https://windliangblog.oss-cn-beijing.aliyuncs.com/windliangblog.oss-cn-beijing.aliyuncs.comKapture%202022-04-13%20at%2007.51.13.gif)
 
-# 场景
+## 场景
 
 回到我们的响应式系统中。
 
@@ -158,7 +158,7 @@ export function queueWatcher(watcher) {
 
 但运行上边的程序发现并不是这样，页面只看到了 `liang` ，没有看到 `hello` 。
 
-# 小猜测
+## 小猜测
 
 没有研究过 `Chrome` 的代码，这里不负责任的猜想一下，有问题欢迎讨论。
 
@@ -194,7 +194,7 @@ data.text = "liang";
 
 ![Kapture 2022-04-13 at 09.11.42](https://windliangblog.oss-cn-beijing.aliyuncs.com/windliangblog.oss-cn-beijing.aliyuncs.comKapture%202022-04-13%20at%2009.11.42.gif)
 
-# 验证微任务先执行
+## 验证微任务先执行
 
 为了继续了解下边图中的流程，我们再举个例子。
 
@@ -244,7 +244,7 @@ p.then(() => {
 
 
 
-# 优化
+## 优化
 
 [响应式系统之异步队列](https://vue.windliang.wang/posts/Vue2%E5%89%A5%E4%B8%9D%E6%8A%BD%E8%8C%A7-%E5%93%8D%E5%BA%94%E5%BC%8F%E7%B3%BB%E7%BB%9F%E4%B9%8B%E5%BC%82%E6%AD%A5%E9%98%9F%E5%88%97.html)文章中介绍的，如下代码：
 
@@ -273,7 +273,7 @@ export function queueWatcher(watcher) {
 
 `Vue` 中提供了 `next-tick` 供我们使用，下边看一下实现。
 
-# next-tick 实现思路
+## next-tick 实现思路
 
 实现起来其实也很简单，只需要模仿 [之前](https://vue.windliang.wang/posts/Vue2%E5%89%A5%E4%B8%9D%E6%8A%BD%E8%8C%A7-%E5%93%8D%E5%BA%94%E5%BC%8F%E7%B3%BB%E7%BB%9F%E4%B9%8B%E5%BC%82%E6%AD%A5%E9%98%9F%E5%88%97.html) `Watcher` 队列的实现。
 
@@ -367,7 +367,7 @@ export function nextTick(cb, ctx) {
 
 ```
 
-# 优化异步队列
+## 优化异步队列
 
 执行 `Watcher` 队列的更新我们就不使用了 `setTimeout` 了，直接使用 `next-tick` 即可。
 
@@ -417,7 +417,7 @@ data.text = "liang";
 
 我们在第一次微任务的时候将 `dom` 更新为了 `liang` ，到了第一次渲染线程当然就会渲染出 `liang` 了。
 
-# nextTick 用法
+## nextTick 用法
 
 ```js
 import { observe } from "./reactive";
@@ -497,7 +497,7 @@ updateData();
 
 直接将 `nextTick()` 进行 `await` ，然后再输出，效果的话和上边是一样的。
 
-# 总
+## 总
 
 主要讲解了 `nextTick` 的原理，将 `Watcher` 的更新放到了微任务中，防止第一次渲染线程浪费掉。
 

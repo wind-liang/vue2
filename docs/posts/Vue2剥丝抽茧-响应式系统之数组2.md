@@ -8,7 +8,7 @@ date: 2022-04-07 06:59:33
 
 接 [Vue2剥丝抽茧-响应式系统](https://windliang.wang/2022/03/27/Vue2%E5%89%A5%E4%B8%9D%E6%8A%BD%E8%8C%A7-%E5%93%8D%E5%BA%94%E5%BC%8F%E7%B3%BB%E7%BB%9F/)、[Vue2剥丝抽茧-响应式系统之分支切换](https://windliang.wang/2022/03/31/Vue2%E5%89%A5%E4%B8%9D%E6%8A%BD%E8%8C%A7-%E5%93%8D%E5%BA%94%E5%BC%8F%E7%B3%BB%E7%BB%9F%E4%B9%8B%E5%88%86%E6%94%AF%E5%88%87%E6%8D%A2/)，[响应式系统之嵌套 ](https://vue.windliang.wang/posts/Vue2%E5%89%A5%E4%B8%9D%E6%8A%BD%E8%8C%A7-%E5%93%8D%E5%BA%94%E5%BC%8F%E7%B3%BB%E7%BB%9F%E4%B9%8B%E5%B5%8C%E5%A5%97.html)、[响应式系统之深度响应](https://vue.windliang.wang/posts/Vue2%E5%89%A5%E4%B8%9D%E6%8A%BD%E8%8C%A7-%E5%93%8D%E5%BA%94%E5%BC%8F%E7%B3%BB%E7%BB%9F%E4%B9%8B%E6%B7%B1%E5%BA%A6%E5%93%8D%E5%BA%94.html) 、[Vue2剥丝抽茧-响应式系统之数组](https://vue.windliang.wang/posts/Vue2%E5%89%A5%E4%B8%9D%E6%8A%BD%E8%8C%A7-%E5%93%8D%E5%BA%94%E5%BC%8F%E7%B3%BB%E7%BB%9F%E4%B9%8B%E6%95%B0%E7%BB%84.html) 还没有看过的同学需要看一下。
 
-# 场景1
+## 场景1
 
 ```js
 import { observe } from "./reactive";
@@ -86,7 +86,7 @@ export class Observer {
 }
 ```
 
-# 场景2
+## 场景2
 
 ```js
 const data = {
@@ -199,7 +199,7 @@ function dependArray(value) {
 
 ![image-20220407081215439](https://windliangblog.oss-cn-beijing.aliyuncs.com/windliangblog.oss-cn-beijing.aliyuncs.comimage-20220407081215439.png)
 
-# 场景3
+## 场景3
 
 ```js
 const data = {
@@ -269,7 +269,7 @@ methodsToPatch.forEach(function (method) {
 
 ![image-20220407081035789](https://windliangblog.oss-cn-beijing.aliyuncs.com/windliangblog.oss-cn-beijing.aliyuncs.comimage-20220407081035789.png)
 
-# 总
+## 总
 
 这篇文章主要解决了两个问题，
 

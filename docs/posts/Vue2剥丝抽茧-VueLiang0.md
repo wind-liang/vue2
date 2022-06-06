@@ -81,11 +81,11 @@ new Vue({
 
 提供了 `data` 、`watch` 、`computed`、`methods` ，在 `render` 方法中正常情况的话应该是返回虚拟 `dom` ，这里我们直接生成一个真的 `dom` 返回。
 
-# 代理
+## 代理
 
 我们使用 `data`、`methods` 或者 `computed` 的时候，都是通过 `this.xxx` ，而不是 `this.data.xxx` 或者 `this.methods.xxx` ，是因为 `Vue` 帮我们把这些属性、方法都挂载到了 `Vue` 实例上。
 
-## 挂载 `methods` 
+### 挂载 `methods` 
 
 ```js
 // VueLiang0/src/core/instance/state.js
@@ -97,7 +97,7 @@ function initMethods(vm, methods) {
 }
 ```
 
-## 挂载 `computed` 
+### 挂载 `computed` 
 
 ```js
 export function defineComputed(target, key, userDef) {
@@ -106,7 +106,7 @@ export function defineComputed(target, key, userDef) {
 }
 ```
 
-## 挂载 `data`
+### 挂载 `data`
 
 ```js
 function initData(vm) {
@@ -186,7 +186,7 @@ export function proxy(target, sourceKey, key) {
 }
 ```
 
-# 响应式
+## 响应式
 
 把各个属性初始化完成后，调用 `mounted` 方法，把我们的 `dom` 挂载到根节点中。
 
@@ -242,7 +242,7 @@ Vue.prototype._update = function (dom) {
 };
 ```
 
-# 整体流程
+## 整体流程
 
 入口文件代码如下：
 
@@ -318,7 +318,7 @@ export function initMixin(Vue) {
 
 最开始的各种 `Mixin` 是在 `Vue.prototype`  原型对象上挂载需要的方法，`initGlobalAPI` 是直接在 `Vue` 上挂载方法，`new Vue` 就是传入 `options` 属性，接着调用 `this.init` 方法将 `data` 、`watch` 、`computed`、`methods`  这些进行初始化，最后调用 `$mount` 方法挂载 `dom` 。
 
-# 最终效果
+## 最终效果
 
 我们运行下程序，修改 `webpack.config.js` 的 `entry` 为我们写好的测试文件。
 
@@ -404,7 +404,7 @@ new Vue({
 
 当我们点击的时候视图就自动进行了更新，`watch` 也进行了回调，简化的响应式系统就被我们实现了。
 
-# 总
+## 总
 
 更详细代码的大家可以在 [github](https://github.com/wind-liang/vue2) 进行查看和调试。
 

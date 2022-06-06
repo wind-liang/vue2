@@ -17,7 +17,7 @@ module.exports = {
     themeConfig: {
         search: false,
         lastUpdated: "Last Updated",
-        sidebarDepth: 0,
+        sidebarDepth: 2,
         nav: [
             { text: "Home", link: "/", icon: "fa fa-home" },
             {

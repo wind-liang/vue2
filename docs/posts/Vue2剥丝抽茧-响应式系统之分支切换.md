@@ -8,7 +8,7 @@ date: 2022-03-31 07:25:57
 
 接上篇：[Vue2剥丝抽茧-响应式系统](https://windliang.wang/2022/03/27/Vue2%E5%89%A5%E4%B8%9D%E6%8A%BD%E8%8C%A7-%E5%93%8D%E5%BA%94%E5%BC%8F%E7%B3%BB%E7%BB%9F/) ，没看的同学需要先看一下。
 
-# 场景
+## 场景
 
 我们考虑一下下边的代码会输出什么。
 
@@ -34,13 +34,13 @@ data.text = "hello, liang"; // updateComponent 会执行吗？
 
 我们来一步一步理清：
 
-## `observer(data)` 
+### `observer(data)` 
 
 拦截了 `data` 中 `text` 和 `ok` 的 `get、set`，并且各自初始化了一个 `Dep` 实例，用来保存依赖它们的 `Watcher` 对象。
 
 ![image-20220331073954801](https://windliangblog.oss-cn-beijing.aliyuncs.com/windliangblog.oss-cn-beijing.aliyuncs.comimage-20220331073954801.png)
 
-## `new Watcher(updateComponent);` 
+### `new Watcher(updateComponent);` 
 
 这一步会执行 `updateComponent` 函数，执行过程中用到的所有对象属性，会将 `Watcher` 收集到相应对象属性中的`Dep` 中。
 
@@ -48,7 +48,7 @@ data.text = "hello, liang"; // updateComponent 会执行吗？
 
 当然这里的 `Watcher` 其实是同一个，所以用了指向的箭头。
 
-## `data.ok = false;` 
+### `data.ok = false;` 
 
 这一步会触发 `set` ，从而执行 `Dep` 中所有的 `Watcher` ，此时就会执行一次 `updateComponent` 。
 
@@ -68,7 +68,7 @@ const updateComponent = () => {
 
 而 `data.ok` 会继续执行，触发 `get` 收集 `Watcher` ，但由于我们 `Dep` 中使用的是数组，此时收集到的两个 `Wacher` 其实是同一个，这里是有问题，会导致 `updateComponent` 重复执行，一会儿我们来解决下。
 
-## `data.text = "hello, liang";` 
+### `data.text = "hello, liang";` 
 
 执行这句的时候，会触发 `text` 的 `set`，所以会执行一次 `updateComponent` 。但从代码来看 `updateComponent` 函数中由于 `data.ok` 为 `false`，`data.text` 对输出没有任何影响，这次执行其实是没有必要的。
 
@@ -78,7 +78,7 @@ const updateComponent = () => {
 
 ![image-20220331081754535](https://windliangblog.oss-cn-beijing.aliyuncs.com/windliangblog.oss-cn-beijing.aliyuncs.comimage-20220331081754535.png)
 
-# 问题
+## 问题
 
 总结下来我们需要做两件事情。
 
@@ -86,7 +86,7 @@ const updateComponent = () => {
 2. 重置，如果该属性对 `Dep` 中的 `Wacher` 已经没有影响了（换句话就是，`Watcher` 中的 `updateComponent` 已经不会读取到该属性了
    ），就将该 `Watcher` 从该属性的 `Dep` 中删除。
 
-# 去重
+## 去重
 
 去重的话有两种方案：
 
@@ -194,7 +194,7 @@ export default class Watcher {
 
 ```
 
-# 重置
+## 重置
 
 同样是两个方案：
 
@@ -349,7 +349,7 @@ export default class Watcher {
 
 ```
 
-# 测试
+## 测试
 
 回到开头的代码
 
@@ -376,7 +376,7 @@ data.text = "hello, liang"; // updateComponent 会执行吗？
 
 此时 `data.text` 修改的话就不会再执行 `updateComponent` 了，因为第二次执行的时候，我们把 `data.text` 中 `Dep` 里的 `Watcher` 清除了。
 
-# 总
+## 总
 
 今天这个主要就是对响应式系统的一点优化，避免不必要的重新执行。所做的事情就是重新调用函数的时候，把已经没有关联的 `Watcher` 去除。
 

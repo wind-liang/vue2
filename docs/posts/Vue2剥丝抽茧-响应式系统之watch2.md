@@ -8,7 +8,7 @@ date: 2022-04-17 14:26:33
 
 Vue2 源码从零详解系列文章， 还没有看过的同学可能需要看一下之前的，[vue.windliang.wang/](https://vue.windliang.wang/)
 
-# 场景1
+## 场景1
 
 在 [Vue2剥丝抽茧-响应式系统之watch](https://vue.windliang.wang/posts/Vue2%E5%89%A5%E4%B8%9D%E6%8A%BD%E8%8C%A7-%E5%93%8D%E5%BA%94%E5%BC%8F%E7%B3%BB%E7%BB%9F%E4%B9%8Bwatch.html) 中，我们实现了 `initWatch` ，对于下边的代码
 
@@ -59,7 +59,7 @@ options.data.title = "changeTitle";
 
 接下来我们来实现一下。
 
-# 实现思路
+## 实现思路
 
 其实思路非常简单，实现两点就可以：
 
@@ -106,7 +106,7 @@ function $watch(data, expOrFn, handler, options) {
 
 ```
 
-# 测试
+## 测试
 
 回到开头的代码：
 
@@ -133,7 +133,7 @@ options.data.title = "changeTitle";
 
 ![image-20220417132654191](https://windliangblog.oss-cn-beijing.aliyuncs.com/windliangblog.oss-cn-beijing.aliyuncs.comimage-20220417132654191.png)
 
-# 场景2
+## 场景2
 
 ```js
 import { observe } from "./reactive";
@@ -198,7 +198,7 @@ const options = {
 
 接下来我们来实现 `deep` 的功能。
 
-# 实现思路
+## 实现思路
 
 我们只需要在收集 `Watcher` 的过程中，深度遍历一遍当前对象，触发所有属性的 `get` ，然后每一个属性就会收集到当前 `Watcher` ，这样改变对象内部的值的时候，就会触发该 `Watcher` ，从而执行回调函数。
 
@@ -339,7 +339,7 @@ function $watch(data, expOrFn, handler, options) {
 }
 ```
 
-# 测试
+## 测试
 
 ```js
 import { observe } from "./reactive";
@@ -379,6 +379,6 @@ setTimeout(() => {
 
 ![image-20220417172959487](https://windliangblog.oss-cn-beijing.aliyuncs.com/windliangblog.oss-cn-beijing.aliyuncs.comimage-20220417172959487.png)
 
-# 总结
+## 总结
 
 实现了 `watch` 中常用的 `immediate` 和 `deep` 。

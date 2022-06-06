@@ -8,7 +8,7 @@ date: 2022-06-05 08:15:33
 
 [虚拟dom简介](https://vue.windliang.wang/posts/Vue2%E5%89%A5%E4%B8%9D%E6%8A%BD%E8%8C%A7-%E8%99%9A%E6%8B%9Fdom%E7%AE%80%E4%BB%8B.html) 中我们将虚拟 `dom` 转换为了真实 `dom` 的结构，但 `dom` 还包含很多属性，比如 `class` 、`style` 等，还可以绑定事件函数等都没有实现，这篇文章来详细介绍一下绑定原生事件的过程。
 
-# 绑定整体过程
+## 绑定整体过程
 
 `vue2` 中将 `style` 、`class` 、原生事件的设置都单独为了一个文件。
 
@@ -228,7 +228,7 @@ function invokeCreateHooks(vnode) {
 
 接下来我们来详细看一下 `event.js` 中的 `create` 函数，也就是 `dom` 绑定事件的过程。
 
-# 绑定事件
+## 绑定事件
 
 ```js
 export default {
@@ -665,7 +665,7 @@ export default {
 
 以上就是添加 `dom` 事件和更新 `dom` 事件的全过程了，下边让我们测试一下。
 
-# 测试
+## 测试
 
 相比于上一篇文章，`render` 函数中除了传 `tag` 名和 `children` ，我们会多传一个 `data` 参数，包含一个 `on` 属性。
 
@@ -756,7 +756,7 @@ _update(_render());
 
 控制台成功有了输出，说明我们的 `dom` 点击事件绑定成功了。
 
-# 总
+## 总
 
 绑定 `dom` 的过程其中两个点还是比较有趣的：一个是 `supportsPassive`  的赋值，还有 `dom` 事件更新时候通过改变指向，避免了 `dom` 事件的频繁移除和添加，只能用优雅二字来形容了。
 

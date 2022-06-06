@@ -8,7 +8,7 @@ date: 2022-04-05 11:12:33
 
 接 [Vue2剥丝抽茧-响应式系统](https://windliang.wang/2022/03/27/Vue2%E5%89%A5%E4%B8%9D%E6%8A%BD%E8%8C%A7-%E5%93%8D%E5%BA%94%E5%BC%8F%E7%B3%BB%E7%BB%9F/)、[Vue2剥丝抽茧-响应式系统之分支切换](https://windliang.wang/2022/03/31/Vue2%E5%89%A5%E4%B8%9D%E6%8A%BD%E8%8C%A7-%E5%93%8D%E5%BA%94%E5%BC%8F%E7%B3%BB%E7%BB%9F%E4%B9%8B%E5%88%86%E6%94%AF%E5%88%87%E6%8D%A2/)，[响应式系统之嵌套 ](https://vue.windliang.wang/posts/Vue2%E5%89%A5%E4%B8%9D%E6%8A%BD%E8%8C%A7-%E5%93%8D%E5%BA%94%E5%BC%8F%E7%B3%BB%E7%BB%9F%E4%B9%8B%E5%B5%8C%E5%A5%97.html)还没有看过的同学需要看一下。
 
-# 场景
+## 场景
 
 ```js
 import { observe } from "./reactive";
@@ -60,7 +60,7 @@ data.text = {
 
 我们当然不希望每次都赋值整个对象，我们需要做一些修改，把嵌套的对象也变成响应式的。
 
-# 方案
+## 方案
 
 我们只需要在给某个 `key` 重写 `get` 和 `set` 之前，把它的 `value` 就像上边给 `data` 调用 `observe` 函数一样，也调用一次 `observe` 函数即可。
 
@@ -122,7 +122,7 @@ export function observe(value) {
 }
 ```
 
-# 场景2
+## 场景2
 
 ```js
 import { observe } from "./reactive";
@@ -217,6 +217,6 @@ export function defineReactive(obj, key, val, shallow) {
 }
 ```
 
-# 总
+## 总
 
 通过递归解决了属性是对象的依赖，可以为未来数组的依赖留下基础。

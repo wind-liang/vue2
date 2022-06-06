@@ -8,7 +8,7 @@ date: 2022-04-08 09:37:33
 
 Vue2 源码从零详解系列文章， 还没有看过的同学可能需要看一下之前的，[vue.windliang.wang/](https://vue.windliang.wang/)
 
-# 数组set
+## 数组set
 
 ```js
 import { observe } from "./reactive";
@@ -93,7 +93,7 @@ new Watcher(updateComponent);
 set(data.list, 0, 3);
 ```
 
-# 数组 del
+## 数组 del
 
 同数组 `set` ，我们顺便提供一个 `del` 的方法，支持数组响应式的删除某个元素。
 
@@ -112,7 +112,7 @@ export function del(target, key) {
 
 ```
 
-# 对象 set
+## 对象 set
 
 ```js
 import { observe, set, del } from "./reactive";
@@ -376,7 +376,7 @@ set(data.obj, "c", 3);
 
 此时如果修改 `c` 的值，也会成功触发 `Watcher` 的执行了。
 
-# 对象 del
+## 对象 del
 
 有了上边的了解，删除就很好解决了。
 
@@ -408,6 +408,6 @@ export function del(target, key) {
 }
 ```
 
-# 总
+## 总
 
 通过为对象收集依赖，将对象、数组的修改、删除也变成响应式的了，同时为用户提供了 `set` 和 `del` 方法。

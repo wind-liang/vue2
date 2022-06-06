@@ -8,7 +8,7 @@ date: 2022-04-19 09:49:33
 
 Vue2 源码从零详解系列文章， 还没有看过的同学可能需要看一下之前的，[vue.windliang.wang/](https://vue.windliang.wang/)
 
-# 场景
+## 场景
 
 ```js
 import { observe } from "./reactive";
@@ -44,7 +44,7 @@ initComputed(options.data, options.computed);
 
 这篇文章主要就来实现上边的 `initComputed` 方法。
 
-# 实现思路
+## 实现思路
 
 主要做三件事情
 
@@ -52,7 +52,7 @@ initComputed(options.data, options.computed);
 2. 处理 `computed` 的值
 3.  `computed` 属性的响应式
 
-## 惰性的响应式数据
+### 惰性的响应式数据
 
 回想一下我们之前的 `Watcher` 。
 
@@ -390,7 +390,7 @@ setTimeout(() => {
 }); // 为什么用 setTimeout 参考 https://vue.windliang.wang/posts/Vue2%E5%89%A5%E4%B8%9D%E6%8A%BD%E8%8C%A7-%E5%93%8D%E5%BA%94%E5%BC%8F%E7%B3%BB%E7%BB%9F%E4%B9%8BnextTick.html
 ```
 
-## 处理 `computed` 的值
+### 处理 `computed` 的值
 
 接下来就是 `initComputed` 的逻辑，主要就是结合上边所讲的，将传进来的 `computed` 转为惰性的响应式数据。
 
@@ -527,7 +527,7 @@ new Watcher(options.data, updateComponent);
 
 
 
-## computed 属性的响应式
+### computed 属性的响应式
 
 思考下边的场景：
 
@@ -707,7 +707,7 @@ setTimeout(() => {
 
 ![image-20220420101629653](https://windliangblog.oss-cn-beijing.aliyuncs.com/windliangblog.oss-cn-beijing.aliyuncs.comimage-20220420101629653.png)
 
-# 总
+## 总
 
 `computed` 对应的函数作为了一个 `Watcher` ，使用计算属性的函数也是一个 `Watcher` ，`computed` 函数中使用的属性会将这两个 `Watcher` 都收集上。
 
