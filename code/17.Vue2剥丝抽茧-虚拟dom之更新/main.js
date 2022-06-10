@@ -2,25 +2,32 @@ import * as nodeOps from "./node-ops";
 import modules from "./modules";
 import { createPatchFunction } from "./patch";
 import { createElement } from "./create-element";
-
+import { observe } from "./observer/reactive";
+import Watcher from "./observer/watcher";
 const options = {
     el: "#root",
     data: {
-        text: "hello,liang",
-        text2: "2",
+        selected: 1,
     },
     render(createElement) {
-        const test = createElement(
+        const vnode = createElement(
             "div",
             {
                 on: {
-                    click: () => console.log(1),
-                    dblclick: () => console.log(2),
+                    click: () => {
+                        this.selected = 3;
+                    },
                 },
             },
-            [this.text, createElement("div", this.text2)]
+            [
+                createElement("div", [
+                    createElement("div", {}, this.selected + "left"),
+                    "hello",
+                ]),
+                createElement("span", {}, "right"),
+            ]
         );
-        return test;
+        return vnode;
     },
 };
 
@@ -29,12 +36,24 @@ const _render = function () {
     return vnode;
 };
 
-const $el = document.querySelector(options.el);
-
 const __patch__ = createPatchFunction({ nodeOps, modules });
 
-function _update(vnode) {
-    __patch__($el, vnode);
-}
+const vm = {};
+vm.$el = document.querySelector(options.el);
+const _update = (vnode) => {
+    const prevVnode = vm._vnode;
+    vm._vnode = vnode;
+    // Vue.prototype.__patch__ is injected in entry points
+    // based on the rendering backend used.
+    if (!prevVnode) {
+        // initial render
+        vm.$el = __patch__(vm.$el, vnode);
+    } else {
+        // updates
+        vm.$el = __patch__(prevVnode, vnode);
+    }
+};
 
-_update(_render());
+observe(options.data);
+
+new Watcher(options.data, () => _update(_render()));

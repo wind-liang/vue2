@@ -37,6 +37,11 @@ module.exports = {
         ],
         sidebar: [
             {
+                title: "文章全部源码",
+                collapsable: false, // 不折叠
+                path: "/",
+            },
+            {
                 title: "响应式系统",
                 collapsable: false, // 不折叠
                 children: [
@@ -106,6 +111,10 @@ module.exports = {
                         title: "16.虚拟dom之事件绑定",
                         path: "/posts/Vue2剥丝抽茧-虚拟dom之绑定事件",
                     },
+                    {
+                        title: "17.虚拟dom之更新",
+                        path: "/posts/Vue2剥丝抽茧-虚拟dom之更新",
+                    },
                 ],
             },
             {
@@ -117,11 +126,6 @@ module.exports = {
                         path: "/posts/Vue2剥丝抽茧-VueLiang0",
                     },
                 ],
-            },
-            {
-                title: "文章全部源码",
-                collapsable: false, // 不折叠
-                path: "/",
             },
         ],
         footer: {
