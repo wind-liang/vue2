@@ -11,6 +11,7 @@ module.exports = {
                 key: "baef808a4403af4a3001bb28345eaf85",
             },
         ],
+        "@renovamen/vuepress-plugin-katex",
     ],
     // 主题和它的配置
     theme: "@qcyblm/vpx",
@@ -114,6 +115,10 @@ module.exports = {
                     {
                         title: "17.虚拟dom之更新",
                         path: "/posts/Vue2剥丝抽茧-虚拟dom之更新",
+                    },
+                    {
+                        title: "18.虚拟dom之移动",
+                        path: "/posts/Vue2剥丝抽茧-虚拟dom之移动",
                     },
                 ],
             },

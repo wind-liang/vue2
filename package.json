@@ -11,5 +11,8 @@
     "scripts": {
         "dev": "vuepress dev docs",
         "build": "vuepress build docs"
+    },
+    "dependencies": {
+        "@renovamen/vuepress-plugin-katex": "^0.2.0"
     }
 }

@@ -126,10 +126,49 @@ export function createPatchFunction(backend) {
             nodeOps.setTextContent(elm, vnode.text);
         }
     }
-
+    function createKeyToOldIdx(children, beginIdx, endIdx) {
+        let i, key;
+        const map = {};
+        for (i = beginIdx; i <= endIdx; ++i) {
+            key = children[i].key;
+            if (isDef(key)) map[key] = i;
+        }
+        return map;
+    }
     function updateChildren(elm, oldCh, ch) {
-        for (let i = 0; i < oldCh.length; i++) {
-            patchVnode(oldCh[i], ch[i]);
+        let beforeMaxIndex = -1;
+        let oldKeyToIdx, idxInOld;
+        for (let i = 0; i < ch.length; i++) {
+            const newVnode = ch[i];
+            if (isUndef(oldKeyToIdx))
+                oldKeyToIdx = createKeyToOldIdx(oldCh, 0, oldCh.length - 1);
+            idxInOld = isDef(newVnode.key)
+                ? oldKeyToIdx[newVnode.key]
+                : findIdxInOld(newVnode, oldCh, 0, oldCh.length);
+
+            if (sameVnode(newVnode, oldCh[idxInOld])) {
+                newVnode.elm = oldCh[idxInOld].elm;
+                patchVnode(oldCh[idxInOld], ch[i]);
+                // 移动位置
+                if (i > beforeMaxIndex) {
+                    // 无需移动
+                    beforeMaxIndex = idxInOld;
+                } else {
+                    const currentVnode = newVnode;
+                    const beforeVnode = ch[i - 1];
+                    nodeOps.insertBefore(
+                        elm,
+                        currentVnode.elm,
+                        nodeOps.nextSibling(beforeVnode.elm)
+                    );
+                }
+            }
+        }
+    }
+    function findIdxInOld(node, oldCh, start, end) {
+        for (let i = start; i < end; i++) {
+            const c = oldCh[i];
+            if (isDef(c) && sameVnode(node, c)) return i;
         }
     }
 
