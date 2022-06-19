@@ -20,7 +20,7 @@ const options = {
                 on: {
                     click: () => {
                         console.log(1);
-                        this.list = ["c", "b", "a"];
+                        this.list = ["c", "a", "b"];
                     },
                 },
             },

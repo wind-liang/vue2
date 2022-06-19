@@ -135,40 +135,46 @@ export function createPatchFunction(backend) {
         }
         return map;
     }
-    function updateChildren(elm, oldCh, ch) {
-        let beforeMaxIndex = -1;
-        let oldKeyToIdx, idxInOld;
-        for (let i = 0; i < ch.length; i++) {
-            const newVnode = ch[i];
-            if (isUndef(oldKeyToIdx))
-                oldKeyToIdx = createKeyToOldIdx(oldCh, 0, oldCh.length - 1);
-            idxInOld = isDef(newVnode.key)
-                ? oldKeyToIdx[newVnode.key]
-                : findIdxInOld(newVnode, oldCh, 0, oldCh.length);
+    function updateChildren(parentElm, oldCh, newCh) {
+        let oldStartIdx = 0;
+        let newStartIdx = 0;
+        let oldEndIdx = oldCh.length - 1;
+        let oldStartVnode = oldCh[0];
+        let oldEndVnode = oldCh[oldEndIdx];
+        let newEndIdx = newCh.length - 1;
+        let newStartVnode = newCh[0];
+        let newEndVnode = newCh[newEndIdx];
 
-            if (sameVnode(newVnode, oldCh[idxInOld])) {
-                newVnode.elm = oldCh[idxInOld].elm;
-                patchVnode(oldCh[idxInOld], ch[i]);
-                // 移动位置
-                if (i > beforeMaxIndex) {
-                    // 无需移动
-                    beforeMaxIndex = idxInOld;
-                } else {
-                    const currentVnode = newVnode;
-                    const beforeVnode = ch[i - 1];
-                    nodeOps.insertBefore(
-                        elm,
-                        currentVnode.elm,
-                        nodeOps.nextSibling(beforeVnode.elm)
-                    );
-                }
+        while (oldStartIdx <= oldEndIdx) {
+            if (sameVnode(oldStartVnode, newStartVnode)) {
+                patchVnode(oldStartVnode, newStartVnode);
+                oldStartVnode = oldCh[++oldStartIdx];
+                newStartVnode = newCh[++newStartIdx];
+            } else if (sameVnode(oldEndVnode, newEndVnode)) {
+                patchVnode(oldEndVnode, newEndVnode);
+                oldEndVnode = oldCh[--oldEndIdx];
+                newEndVnode = newCh[--newEndIdx];
+            } else if (sameVnode(oldStartVnode, newEndVnode)) {
+                // Vnode moved right
+                patchVnode(oldStartVnode, newEndVnode);
+                nodeOps.insertBefore(
+                    parentElm,
+                    oldStartVnode.elm,
+                    nodeOps.nextSibling(oldEndVnode.elm)
+                );
+                oldStartVnode = oldCh[++oldStartIdx];
+                newEndVnode = newCh[--newEndIdx];
+            } else if (sameVnode(oldEndVnode, newStartVnode)) {
+                // Vnode moved left
+                patchVnode(oldEndVnode, newStartVnode);
+                nodeOps.insertBefore(
+                    parentElm,
+                    oldEndVnode.elm,
+                    oldStartVnode.elm
+                );
+                oldEndVnode = oldCh[--oldEndIdx];
+                newStartVnode = newCh[++newStartIdx];
             }
-        }
-    }
-    function findIdxInOld(node, oldCh, start, end) {
-        for (let i = start; i < end; i++) {
-            const c = oldCh[i];
-            if (isDef(c) && sameVnode(node, c)) return i;
         }
     }
 
