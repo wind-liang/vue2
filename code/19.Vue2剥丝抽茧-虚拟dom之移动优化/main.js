@@ -7,7 +7,7 @@ import Watcher from "./observer/watcher";
 const options = {
     el: "#root",
     data: {
-        list: ["a", "b", "c"],
+        list: ["a", "b", "c", "d", "e"],
     },
     render(createElement) {
         const children = [];
@@ -20,7 +20,7 @@ const options = {
                 on: {
                     click: () => {
                         console.log(1);
-                        this.list = ["c", "a", "b"];
+                        this.list = ["c", "a", "b", "e", "d"];
                     },
                 },
             },

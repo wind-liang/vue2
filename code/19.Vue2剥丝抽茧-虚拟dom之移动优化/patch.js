@@ -144,9 +144,14 @@ export function createPatchFunction(backend) {
         let newEndIdx = newCh.length - 1;
         let newStartVnode = newCh[0];
         let newEndVnode = newCh[newEndIdx];
-
+        let oldKeyToIdx, idxInOld, vnodeToMove;
         while (oldStartIdx <= oldEndIdx) {
-            if (sameVnode(oldStartVnode, newStartVnode)) {
+            if (isUndef(oldStartVnode)) {
+                oldStartVnode = oldCh[++oldStartIdx]; // 已经被置为 undefined 跳过
+            } else if (isUndef(oldEndVnode)) {
+                // 已经被置为 undefined 跳过
+                oldEndVnode = oldCh[--oldEndIdx];
+            } else if (sameVnode(oldStartVnode, newStartVnode)) {
                 patchVnode(oldStartVnode, newStartVnode);
                 oldStartVnode = oldCh[++oldStartIdx];
                 newStartVnode = newCh[++newStartIdx];
@@ -174,7 +179,40 @@ export function createPatchFunction(backend) {
                 );
                 oldEndVnode = oldCh[--oldEndIdx];
                 newStartVnode = newCh[++newStartIdx];
+            } else {
+                if (isUndef(oldKeyToIdx))
+                    oldKeyToIdx = createKeyToOldIdx(
+                        oldCh,
+                        oldStartIdx,
+                        oldEndIdx
+                    );
+                idxInOld = isDef(newStartVnode.key)
+                    ? oldKeyToIdx[newStartVnode.key]
+                    : findIdxInOld(
+                          newStartVnode,
+                          oldCh,
+                          oldStartIdx,
+                          oldEndIdx
+                      );
+                vnodeToMove = oldCh[idxInOld];
+                if (sameVnode(vnodeToMove, newStartVnode)) {
+                    patchVnode(vnodeToMove, newStartVnode);
+                    oldCh[idxInOld] = undefined;
+                    nodeOps.insertBefore(
+                        parentElm,
+                        vnodeToMove.elm,
+                        oldStartVnode.elm
+                    );
+                }
+                newStartVnode = newCh[++newStartIdx];
             }
+        }
+    }
+
+    function findIdxInOld(node, oldCh, start, end) {
+        for (let i = start; i < end; i++) {
+            const c = oldCh[i];
+            if (isDef(c) && sameVnode(node, c)) return i;
         }
     }
 

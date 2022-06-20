@@ -96,9 +96,23 @@ date: 2022-06-15 08:38:33
 
 ![image-20220619144639378](https://windliangblog.oss-cn-beijing.aliyuncs.com/windliangblog.oss-cn-beijing.aliyuncs.comimage-20220619144639378.png)
 
+如果不相同，我们就循环查找。
+
+### 循环查找
+
+如果上边四种情况都没有匹配，我们就回到 [虚拟dom之移动](https://vue.windliang.wang/posts/Vue2%E5%89%A5%E4%B8%9D%E6%8A%BD%E8%8C%A7-%E8%99%9A%E6%8B%9Fdom%E4%B9%8B%E7%A7%BB%E5%8A%A8.html#%E9%81%8D%E5%8E%86%E5%88%B0-」) 介绍的，通过 `for` 循环从 `oldVnode` 中依次查找 `newVnode`。
+
+![image-20220620085701067](https://windliangblog.oss-cn-beijing.aliyuncs.com/windliangblog.oss-cn-beijing.aliyuncs.comimage-20220620085701067.png)
+
+因为我们假设了没有增删节点，所以到这步一定会找到一个 `oldVnode` 匹配当前 `newVnode` ，当找到后，因为此时的 `newVnode` 是在最前边，我需要将 `oldVnode` 对应的 `dom` 移动到 `oldStartIdx` 对应 `dom` 的前边，这样就可以和 `newVnode` 的顺序匹配了。
+
+同时我们把匹配到的 `vnode` 标记为 `undefind` ，双指针移到到这里的时候，因为已经匹配过了，直接跳过就好。
+
+最后，将 `newStartIdx` 后移。
+
 ### 小结
 
-因为我们假设了没有增删节点，所以上边的四种情况就已经完备了，接下来只需要不停的重复上边的比较过程，当 `oldStartIdx` 和 `oldEndIdx` 相遇即说明所有节点判断完毕了。
+接下来只需要不停的重复上边的比较过程，我们只需要关心新旧双指针内的节点，节点外已经排好序了，当 `oldStartIdx` 和 `oldEndIdx` 相遇即说明所有节点判断完毕了。
 
 ## 代码实现
 
@@ -114,14 +128,18 @@ function updateChildren(parentElm, oldCh, newCh) {
   let newEndIdx = newCh.length - 1;
   let newStartVnode = newCh[0];
   let newEndVnode = newCh[newEndIdx];
-
+  let oldKeyToIdx, idxInOld, vnodeToMove;
   while (oldStartIdx <= oldEndIdx) {
+    if (isUndef(oldStartVnode)) {
+      oldStartVnode = oldCh[++oldStartIdx]; // 已经被置为 undefined 跳过
+    } else if (isUndef(oldEndVnode)) {  // 已经被置为 undefined 跳过
+      oldEndVnode = oldCh[--oldEndIdx];
     // 头头比较
-    if (sameVnode(oldStartVnode, newStartVnode)) {
+    } else if (sameVnode(oldStartVnode, newStartVnode)) {
       patchVnode(oldStartVnode, newStartVnode);
       oldStartVnode = oldCh[++oldStartIdx];
       newStartVnode = newCh[++newStartIdx];
-    // 尾尾比较
+    // 尾尾比较比较
     } else if (sameVnode(oldEndVnode, newEndVnode)) {
       patchVnode(oldEndVnode, newEndVnode);
       oldEndVnode = oldCh[--oldEndIdx];
@@ -148,7 +166,42 @@ function updateChildren(parentElm, oldCh, newCh) {
       );
       oldEndVnode = oldCh[--oldEndIdx];
       newStartVnode = newCh[++newStartIdx];
+    // 上边都无匹配，进入 for 循环查找
+    } else {
+      if (isUndef(oldKeyToIdx))
+        // 利用 key 映射查找
+        oldKeyToIdx = createKeyToOldIdx(
+          oldCh,
+          oldStartIdx,
+          oldEndIdx
+        );
+      idxInOld = isDef(newStartVnode.key)
+        ? oldKeyToIdx[newStartVnode.key]
+      : findIdxInOld(
+        newStartVnode,
+        oldCh,
+        oldStartIdx,
+        oldEndIdx
+      );
+      vnodeToMove = oldCh[idxInOld];
+      if (sameVnode(vnodeToMove, newStartVnode)) {
+        patchVnode(vnodeToMove, newStartVnode);
+        oldCh[idxInOld] = undefined;
+        nodeOps.insertBefore(
+          parentElm,
+          vnodeToMove.elm,
+          oldStartVnode.elm
+        );
+      }
+      newStartVnode = newCh[++newStartIdx];
     }
+  }
+}
+
+function findIdxInOld(node, oldCh, start, end) {
+  for (let i = start; i < end; i++) {
+    const c = oldCh[i];
+    if (isDef(c) && sameVnode(node, c)) return i;
   }
 }
 ```
@@ -222,7 +275,7 @@ new Watcher(options.data, () => _update(_render()));
 
 ## 总
 
-这篇文章主要是针对一些特定情况进行了优化，根本目的就是减少 `dom` 的移动，相比于 [虚拟 dom 之移动](https://vue.windliang.wang/posts/Vue2%E5%89%A5%E4%B8%9D%E6%8A%BD%E8%8C%A7-%E8%99%9A%E6%8B%9Fdom%E4%B9%8B%E7%A7%BB%E5%8A%A8.html) ，我们也只是更新了 `updateChildren` 方法。
+这篇文章主要是在  [虚拟 dom 之移动](https://vue.windliang.wang/posts/Vue2%E5%89%A5%E4%B8%9D%E6%8A%BD%E8%8C%A7-%E8%99%9A%E6%8B%9Fdom%E4%B9%8B%E7%A7%BB%E5%8A%A8.html) 基础上针对一些特定情况进行了优化，尽可能的保持原来的相对顺序，这样可以减少未来 `dom` 的移动。
 
 当然，目前为止我们还是假设前后 `dom` 结构没有发生变化，下篇文章我们会考虑 `dom` 增减场景下的处理。
 
