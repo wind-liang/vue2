@@ -57,6 +57,7 @@ export function createPatchFunction(backend) {
             insert(parentElm, vnode.elm, refElm);
         }
     }
+
     function insert(parent, elm, ref) {
         if (isDef(parent)) {
             if (isDef(ref)) {
@@ -118,10 +119,15 @@ export function createPatchFunction(backend) {
         if (isUndef(vnode.text)) {
             if (isDef(oldCh) && isDef(ch)) {
                 if (oldCh !== ch) updateChildren(elm, oldCh, ch);
-            } else if (isDef(oldVnode.text)) {
-                // 更新成了空字符
-                nodeOps.setTextContent(elm, "");
+            } else if (isDef(ch)) {
+                // if (isDef(oldVnode.text)) nodeOps.setTextContent(elm, ""); // 源码中有但没有想到对应的例子
+                addVnodes(elm, null, ch, 0, ch.length - 1);
+            } else if (isDef(oldCh)) {
+                removeVnodes(oldCh, 0, oldCh.length - 1);
             }
+            // } else if (isDef(oldVnode.text)) { // 源码中有但没有想到对应的例子
+            //     nodeOps.setTextContent(elm, "");
+            // }
         } else if (oldVnode.text !== vnode.text) {
             nodeOps.setTextContent(elm, vnode.text);
         }
@@ -135,6 +141,11 @@ export function createPatchFunction(backend) {
         }
         return map;
     }
+    function addVnodes(parentElm, refElm, vnodes, startIdx, endIdx) {
+        for (; startIdx <= endIdx; ++startIdx) {
+            createElm(vnodes[startIdx], parentElm, refElm);
+        }
+    }
     function updateChildren(parentElm, oldCh, newCh) {
         let oldStartIdx = 0;
         let newStartIdx = 0;
@@ -144,8 +155,8 @@ export function createPatchFunction(backend) {
         let newEndIdx = newCh.length - 1;
         let newStartVnode = newCh[0];
         let newEndVnode = newCh[newEndIdx];
-        let oldKeyToIdx, idxInOld, vnodeToMove;
-        while (oldStartIdx <= oldEndIdx) {
+        let oldKeyToIdx, idxInOld, vnodeToMove, refElm;
+        while (oldStartIdx <= oldEndIdx && newStartIdx <= newEndIdx) {
             if (isUndef(oldStartVnode)) {
                 oldStartVnode = oldCh[++oldStartIdx]; // 已经被置为 undefined 跳过
             } else if (isUndef(oldEndVnode)) {
@@ -194,18 +205,35 @@ export function createPatchFunction(backend) {
                           oldStartIdx,
                           oldEndIdx
                       );
-                vnodeToMove = oldCh[idxInOld];
-                if (sameVnode(vnodeToMove, newStartVnode)) {
-                    patchVnode(vnodeToMove, newStartVnode);
-                    oldCh[idxInOld] = undefined;
-                    nodeOps.insertBefore(
-                        parentElm,
-                        vnodeToMove.elm,
-                        oldStartVnode.elm
-                    );
+                if (isUndef(idxInOld)) {
+                    // New element
+                    createElm(newStartVnode, parentElm, oldStartVnode.elm);
+                } else {
+                    vnodeToMove = oldCh[idxInOld];
+                    if (sameVnode(vnodeToMove, newStartVnode)) {
+                        patchVnode(vnodeToMove, newStartVnode);
+                        oldCh[idxInOld] = undefined;
+                        nodeOps.insertBefore(
+                            parentElm,
+                            vnodeToMove.elm,
+                            oldStartVnode.elm
+                        );
+                    } else {
+                        // same key but different element. treat as new element
+                        createElm(newStartVnode, parentElm, oldStartVnode.elm);
+                    }
                 }
+
                 newStartVnode = newCh[++newStartIdx];
             }
+        }
+        if (oldStartIdx > oldEndIdx) {
+            refElm = isUndef(newCh[newEndIdx + 1])
+                ? null
+                : newCh[newEndIdx + 1].elm;
+            addVnodes(parentElm, refElm, newCh, newStartIdx, newEndIdx);
+        } else if (newStartIdx > newEndIdx) {
+            removeVnodes(oldCh, oldStartIdx, oldEndIdx);
         }
     }
 

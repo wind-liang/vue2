@@ -124,6 +124,10 @@ module.exports = {
                         title: "19.虚拟dom之移动优化",
                         path: "/posts/Vue2剥丝抽茧-虚拟dom之移动优化",
                     },
+                    {
+                        title: "20.虚拟dom之增删",
+                        path: "/posts/Vue2剥丝抽茧-虚拟dom之增删",
+                    },
                 ],
             },
             {

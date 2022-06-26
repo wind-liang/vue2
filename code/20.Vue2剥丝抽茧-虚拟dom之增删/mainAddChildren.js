@@ -7,24 +7,20 @@ import Watcher from "./observer/watcher";
 const options = {
     el: "#root",
     data: {
-        list: ["a", "b", "c"],
+        hello: "hello",
     },
     render(createElement) {
-        const children = [];
-        for (const item of this.list) {
-            children.push(createElement("div", { key: item }, item));
-        }
         const vnode = createElement(
             "div",
             {
                 on: {
                     click: () => {
                         console.log(1);
-                        this.list = ["a", "c"];
+                        this.hello = "";
                     },
                 },
             },
-            children
+            [this.hello, createElement("div", ["123"])]
         );
         return vnode;
     },
