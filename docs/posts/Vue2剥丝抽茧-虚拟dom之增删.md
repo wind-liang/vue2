@@ -6,11 +6,11 @@ tags:
 date: 2022-06-21 08:32:33
 ---
 
-[虚拟 dom 之移动优化](https://vue.windliang.wang/posts/Vue2%E5%89%A5%E4%B8%9D%E6%8A%BD%E8%8C%A7-%E8%99%9A%E6%8B%9Fdom%E4%B9%8B%E7%A7%BB%E5%8A%A8%E4%BC%98%E5%8C%96.htm) 中介绍了虚拟 `dom` 的双端 `diff` 的算法，但是没有考虑当虚拟 `dom` 增加或者减少的情况，这篇文章介绍增删 `dom` 在各个场景下的的代码完善。
+[虚拟 dom 之移动优化](https://vue.windliang.wang/posts/Vue2%E5%89%A5%E4%B8%9D%E6%8A%BD%E8%8C%A7-%E8%99%9A%E6%8B%9Fdom%E4%B9%8B%E7%A7%BB%E5%8A%A8%E4%BC%98%E5%8C%96.html) 中介绍了虚拟 `dom` 的双端 `diff` 的算法，但是没有考虑当虚拟 `dom` 增加或者减少的情况，这篇文章介绍增删 `dom` 在各个场景下的的代码完善。
 
 ## 循环未找到
 
-[虚拟 dom 之移动优化](https://vue.windliang.wang/posts/Vue2%E5%89%A5%E4%B8%9D%E6%8A%BD%E8%8C%A7-%E8%99%9A%E6%8B%9Fdom%E4%B9%8B%E7%A7%BB%E5%8A%A8%E4%BC%98%E5%8C%96.htm)  中我们进行了头头、尾尾、头尾、尾头的比较后如果没找到对应 `Vnode` ，就开始通过循环查找，但如果是下边的情况：
+[虚拟 dom 之移动优化](https://vue.windliang.wang/posts/Vue2%E5%89%A5%E4%B8%9D%E6%8A%BD%E8%8C%A7-%E8%99%9A%E6%8B%9Fdom%E4%B9%8B%E7%A7%BB%E5%8A%A8%E4%BC%98%E5%8C%96.html)  中我们进行了头头、尾尾、头尾、尾头的比较后如果没找到对应 `Vnode` ，就开始通过循环查找，但如果是下边的情况：
 
 ![image-20220621092725266](https://windliangblog.oss-cn-beijing.aliyuncs.com/windliangblog.oss-cn-beijing.aliyuncs.comimage-20220621092725266.png)
 
