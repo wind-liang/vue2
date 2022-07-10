@@ -1,6 +1,6 @@
 import VNode from "./vnode";
 import { isDef, isUndef } from "./util";
-
+import { registerRef } from "./ref";
 export const emptyNode = new VNode("", {}, []);
 const hooks = ["create", "activate", "update", "remove", "destroy"];
 // vue 源码中的 sameVnode 判断的比较多，这里我们仅简单理解为 key、tag 一致，并且 data 属性还存在即可
@@ -42,6 +42,9 @@ export function createPatchFunction(backend) {
         }
     }
     function createElm(vnode, parentElm, refElm) {
+        if (createComponent(vnode, insertedVnodeQueue, parentElm, refElm)) {
+            return;
+        }
         const data = vnode.data; // dom 相关的属性都放到 data 中
         const children = vnode.children;
         const tag = vnode.tag;
@@ -58,6 +61,30 @@ export function createPatchFunction(backend) {
         }
     }
 
+    function createComponent(vnode, insertedVnodeQueue, parentElm, refElm) {
+        let i = vnode.data;
+        if (isDef(i)) {
+            // after calling the init hook, if the vnode is a child component
+            // it should've created a child instance and mounted it. the child
+            // component also has set the placeholder vnode's elm.
+            // in that case we can just return the element and be done.
+            if (isDef(vnode.componentInstance)) {
+                initComponent(vnode, insertedVnodeQueue);
+                insert(parentElm, vnode.elm, refElm);
+                return true;
+            }
+        }
+    }
+    function initComponent(vnode) {
+        vnode.elm = vnode.componentInstance.$el;
+        if (isPatchable(vnode)) {
+            invokeCreateHooks(vnode);
+        } else {
+            // empty component root.
+            // skip all element-related modules except for ref (#3455)
+            registerRef(vnode);
+        }
+    }
     function insert(parent, elm, ref) {
         if (isDef(parent)) {
             if (isDef(ref)) {
