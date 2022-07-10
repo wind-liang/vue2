@@ -138,6 +138,10 @@ module.exports = {
                         title: "14.响应式系统-VueLiang0",
                         path: "/posts/Vue2剥丝抽茧-VueLiang0",
                     },
+                    {
+                        title: "21.虚拟dom-VueLiang1",
+                        path: "/posts/Vue2剥丝抽茧-VueLiang1",
+                    },
                 ],
             },
         ],
