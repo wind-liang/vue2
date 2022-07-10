@@ -1,4 +1,4 @@
-import Vue from "./src/core/index";
+import Vue from "./src/platforms/web/entry-runtime";
 
 new Vue({
     el: "#root",
@@ -20,6 +20,7 @@ new Vue({
     },
     methods: {
         hello() {
+            console.log("调用methods:hello");
             return "调用methods:hello";
         },
         click() {
@@ -32,8 +33,8 @@ new Vue({
             "div",
             {
                 on: {
-                    click: () => this.click,
-                    dblclick: () => this.hello,
+                    click: () => this.click(),
+                    dblclick: () => this.hello(),
                 },
             },
             [this.text, createElement("div", this.test)]

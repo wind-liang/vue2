@@ -6,19 +6,21 @@ import { noop } from "../util/index";
 
 export function lifecycleMixin(Vue) {
     /**** vue2 源码中 $mount 在另一个位置，这里临时放到这里 */
-    Vue.prototype.$mount = function (el) {
-        el = el && document.querySelector(el);
-        return mountComponent(this, el);
-    };
+
     /*******************************/
-    Vue.prototype._update = function (dom) {
+    Vue.prototype._update = function (vnode) {
         const vm = this;
-        /*****这里仅仅是把 dom 更新，vue2 源码中这里会进行虚拟 dom 的处理 */
-        if (vm.$el.children[0]) {
-            vm.$el.removeChild(vm.$el.children[0]);
+        const prevVnode = vm._vnode;
+        vm._vnode = vnode;
+        // Vue.prototype.__patch__ is injected in entry points
+        // based on the rendering backend used.
+        if (!prevVnode) {
+            // initial render
+            vm.$el = vm.__patch__(vm.$el, vnode);
+        } else {
+            // updates
+            vm.$el = vm.__patch__(prevVnode, vnode);
         }
-        vm.$el.appendChild(dom);
-        /*******************************/
     };
 }
 

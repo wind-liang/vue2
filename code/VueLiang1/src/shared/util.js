@@ -2,6 +2,24 @@ function nativeBind(fn, ctx) {
     return fn.bind(ctx);
 }
 
+// These helpers produce better VM code in JS engines due to their
+// explicitness and function inlining.
+export function isUndef(v) {
+    return v === undefined || v === null;
+}
+
+export function isDef(v) {
+    return v !== undefined && v !== null;
+}
+
+export function isTrue(v) {
+    return v === true;
+}
+
+export function isFalse(v) {
+    return v === false;
+}
+
 export const bind = Function.prototype.bind ? nativeBind : polyfillBind;
 
 /**
@@ -59,4 +77,28 @@ export function remove(arr, item) {
             return arr.splice(index, 1);
         }
     }
+}
+
+/**
+ * Check if value is primitive.
+ */
+export function isPrimitive(value) {
+    return (
+        typeof value === "string" ||
+        typeof value === "number" ||
+        // $flow-disable-line
+        typeof value === "symbol" ||
+        typeof value === "boolean"
+    );
+}
+
+/**
+ * Create a cached version of a pure function.
+ */
+export function cached(fn) {
+    const cache = Object.create(null);
+    return function cachedFn(str) {
+        const hit = cache[str];
+        return hit || (cache[str] = fn(str));
+    };
 }

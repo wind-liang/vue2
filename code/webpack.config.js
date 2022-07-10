@@ -1,6 +1,12 @@
 const path = require("path");
 module.exports = {
-    entry: "./20.Vue2剥丝抽茧-虚拟dom之增删/mainAddChildren.js",
+    entry: "./VueLiang1/vueliang1.js",
+    resolve: {
+        extensions: [".js", ".json"],
+        alias: {
+            "@": path.join(__dirname, "./VueLiang1/src"),
+        },
+    },
     output: {
         path: path.resolve(__dirname, "./dist"),
         filename: "bundle.js",
