@@ -1,3 +1,5 @@
+export const emptyObject = Object.freeze({});
+
 function nativeBind(fn, ctx) {
     return fn.bind(ctx);
 }
@@ -55,6 +57,18 @@ export function hasOwn(obj, key) {
 export function noop(a, b, c) {}
 
 /**
+ * Always return false.
+ */
+export const no = (a, b, c) => false;
+
+/* eslint-enable no-unused-vars */
+
+/**
+ * Return the same value.
+ */
+export const identity = (_) => _;
+
+/**
  * Get the raw type string of a value, e.g., [object Object].
  */
 const _toString = Object.prototype.toString;
@@ -101,4 +115,51 @@ export function cached(fn) {
         const hit = cache[str];
         return hit || (cache[str] = fn(str));
     };
+}
+/**
+ * Camelize a hyphen-delimited string.
+ */
+const camelizeRE = /-(\w)/g;
+export const camelize = cached((str) => {
+    return str.replace(camelizeRE, (_, c) => (c ? c.toUpperCase() : ""));
+});
+
+/**
+ * Capitalize a string.
+ */
+export const capitalize = cached((str) => {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+});
+
+/**
+ * Hyphenate a camelCase string.
+ */
+const hyphenateRE = /\B([A-Z])/g;
+export const hyphenate = cached((str) => {
+    return str.replace(hyphenateRE, "-$1").toLowerCase();
+});
+
+/**
+ * Make a map and return a function for checking if a key
+ * is in that map.
+ */
+export function makeMap(str, expectsLowerCase) {
+    const map = Object.create(null);
+    const list = str.split(",");
+    for (let i = 0; i < list.length; i++) {
+        map[list[i]] = true;
+    }
+    return expectsLowerCase
+        ? (val) => map[val.toLowerCase()]
+        : (val) => map[val];
+}
+
+/**
+ * Mix properties into target object.
+ */
+export function extend(to, _from) {
+    for (const key in _from) {
+        to[key] = _from[key];
+    }
+    return to;
 }

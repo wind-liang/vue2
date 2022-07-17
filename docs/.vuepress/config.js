@@ -128,6 +128,10 @@ module.exports = {
                         title: "20.虚拟dom之增删",
                         path: "/posts/Vue2剥丝抽茧-虚拟dom之增删",
                     },
+                    {
+                        title: "22.虚拟dom之自定义组件",
+                        path: "/posts/Vue2剥丝抽茧-虚拟dom之组件",
+                    },
                 ],
             },
             {

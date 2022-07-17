@@ -24,6 +24,7 @@ export function proxy(target, sourceKey, key) {
 
 export function initState(vm) {
     const opts = vm.$options;
+    if (opts.props) initProps(vm, opts.props);
     if (opts.methods) initMethods(vm, opts.methods);
     if (opts.data) {
         initData(vm);
@@ -35,7 +36,24 @@ export function initState(vm) {
         initWatch(vm, opts.watch);
     }
 }
+function initProps(vm, propsOptions) {
+    debugger;
+    var propsData = vm.$options.propsData || {};
+    const props = (vm._props = {});
+    const keys = (vm.$options._propKeys = []);
 
+    for (const key in propsOptions) {
+        keys.push(key);
+        const value = propsData[key];
+        defineReactive(props, key, value);
+        // static props are already proxied on the component's prototype
+        // during Vue.extend(). We only need to proxy props defined at
+        // instantiation here.
+        if (!(key in vm)) {
+            proxy(vm, `_props`, key);
+        }
+    }
+}
 function initData(vm) {
     let data = vm.$options.data;
     data = vm._data =
@@ -175,7 +193,12 @@ export function stateMixin(Vue) {
     dataDef.get = function () {
         return this._data;
     };
+    const propsDef = {};
+    propsDef.get = function () {
+        return this._props;
+    };
     Object.defineProperty(Vue.prototype, "$data", dataDef);
+    Object.defineProperty(Vue.prototype, "$props", propsDef);
 
     Vue.prototype.$set = set;
     Vue.prototype.$delete = del;

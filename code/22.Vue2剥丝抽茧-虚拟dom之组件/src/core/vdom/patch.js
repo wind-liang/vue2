@@ -41,7 +41,33 @@ export function createPatchFunction(backend) {
             nodeOps.removeChild(parent, el);
         }
     }
+    function createComponent(vnode, parentElm, refElm) {
+        let i = vnode.data;
+        if (isDef(i)) {
+            if (isDef((i = i.hook)) && isDef((i = i.init))) {
+                i(vnode, false /* hydrating */);
+            }
+            // after calling the init hook, if the vnode is a child component
+            // it should've created a child instance and mounted it. the child
+            // component also has set the placeholder vnode's elm.
+            // in that case we can just return the element and be done.
+            if (isDef(vnode.componentInstance)) {
+                initComponent(vnode);
+                insert(parentElm, vnode.elm, refElm);
+                return true;
+            }
+        }
+    }
+    function initComponent(vnode) {
+        vnode.elm = vnode.componentInstance.$el;
+        if (isPatchable(vnode)) {
+            invokeCreateHooks(vnode);
+        }
+    }
     function createElm(vnode, parentElm, refElm) {
+        if (createComponent(vnode, parentElm, refElm)) {
+            return;
+        }
         const data = vnode.data; // dom 相关的属性都放到 data 中
         const children = vnode.children;
         const tag = vnode.tag;
@@ -112,6 +138,11 @@ export function createPatchFunction(backend) {
         const oldCh = oldVnode.children;
         const ch = vnode.children;
         const data = vnode.data;
+
+        if (isDef(data) && isDef((i = data.hook)) && isDef((i = i.prepatch))) {
+            i(oldVnode, vnode);
+        }
+
         if (isDef(data) && isPatchable(vnode)) {
             for (i = 0; i < cbs.update.length; ++i)
                 cbs.update[i](oldVnode, vnode);
@@ -245,25 +276,30 @@ export function createPatchFunction(backend) {
     }
 
     return function patch(oldVnode, vnode) {
-        const isRealElement = isDef(oldVnode.nodeType);
-        if (!isRealElement && sameVnode(oldVnode, vnode)) {
-            // 通过新旧 vnode 进行更新
-            patchVnode(oldVnode, vnode);
+        if (isUndef(oldVnode)) {
+            // empty mount (likely as component), create new root element
+            createElm(vnode);
         } else {
-            // vnode 发生改变或者是第一次渲染
-            if (isRealElement) {
-                // either not server-rendered, or hydration failed.
-                // create an empty node and replace it
-                oldVnode = emptyNodeAt(oldVnode);
+            const isRealElement = isDef(oldVnode.nodeType);
+            if (!isRealElement && sameVnode(oldVnode, vnode)) {
+                // 通过新旧 vnode 进行更新
+                patchVnode(oldVnode, vnode);
+            } else {
+                // vnode 发生改变或者是第一次渲染
+                if (isRealElement) {
+                    // either not server-rendered, or hydration failed.
+                    // create an empty node and replace it
+                    oldVnode = emptyNodeAt(oldVnode);
+                }
+                // replacing existing element
+                const oldElm = oldVnode.elm;
+                const parentElm = nodeOps.parentNode(oldElm);
+
+                // create new node
+                createElm(vnode, parentElm, nodeOps.nextSibling(oldElm));
+
+                removeVnodes([oldVnode], 0, 0);
             }
-            // replacing existing element
-            const oldElm = oldVnode.elm;
-            const parentElm = nodeOps.parentNode(oldElm);
-
-            // create new node
-            createElm(vnode, parentElm, nodeOps.nextSibling(oldElm));
-
-            removeVnodes([oldVnode], 0, 0);
         }
 
         return vnode.elm;

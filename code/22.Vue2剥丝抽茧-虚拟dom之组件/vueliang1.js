@@ -1,31 +1,44 @@
 import Vue from "./src/platforms/web/entry-runtime";
 
+const Hello = {
+    props: {
+        title: String,
+    },
+    data() {
+        return {
+            text: "component world",
+        };
+    },
+    methods: {
+        click() {
+            this.text = ",component world";
+        },
+    },
+    render(h) {
+        return h(
+            "div",
+            {
+                on: {
+                    click: this.click,
+                },
+            },
+            [this.title, this.text]
+        );
+    },
+};
 new Vue({
     el: "#root",
     data() {
         return {
-            test: 1,
-            name: "data:liang",
+            text: "world",
+            title: "hello",
         };
     },
-    watch: {
-        test(newVal, oldVal) {
-            console.log(newVal, oldVal);
-        },
-    },
-    computed: {
-        text() {
-            return "computed:hello:" + this.name;
-        },
-    },
+    components: { Hello },
     methods: {
-        hello() {
-            console.log("调用methods:hello");
-            return "调用methods:hello";
-        },
         click() {
-            this.test = 3;
-            this.name = "wind";
+            this.title = "hello2";
+            // this.text = "hello2";
         },
     },
     render(createElement) {
@@ -33,11 +46,13 @@ new Vue({
             "div",
             {
                 on: {
-                    click: () => this.click(),
-                    dblclick: () => this.hello(),
+                    // click: this.click,
                 },
             },
-            [this.text, createElement("div", this.test)]
+            [
+                createElement("Hello", { props: { title: this.title } }),
+                this.text,
+            ]
         );
         return test;
     },
