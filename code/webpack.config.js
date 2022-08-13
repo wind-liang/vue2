@@ -1,7 +1,7 @@
 const path = require("path");
-const currentPath = "22.Vue2剥丝抽茧-虚拟dom之组件";
+const currentPath = "23.Vue2剥丝抽茧-模版编译之分词";
 module.exports = {
-    entry: `./${currentPath}/vueliang1.js`,
+    entry: `./${currentPath}/main.js`,
     resolve: {
         extensions: [".js", ".json"],
         alias: {

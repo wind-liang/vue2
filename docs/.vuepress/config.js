@@ -135,6 +135,16 @@ module.exports = {
                 ],
             },
             {
+                title: "模版编译",
+                collapsable: false, // 不折叠
+                children: [
+                    {
+                        title: "23.模版编译之分词",
+                        path: "/posts/Vue2剥丝抽茧-模版编译之分词",
+                    },
+                ],
+            },
+            {
                 title: "从零手写Vue",
                 collapsable: false, // 不折叠
                 children: [
