@@ -142,6 +142,10 @@ module.exports = {
                         title: "23.模版编译之分词",
                         path: "/posts/Vue2剥丝抽茧-模版编译之分词",
                     },
+                    {
+                        title: "24.模版编译之生成AST",
+                        path: "/posts/Vue2剥丝抽茧-模版编译之生成AST",
+                    },
                 ],
             },
             {

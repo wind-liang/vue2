@@ -5,7 +5,14 @@ const qnameCapture = `((?:${ncname}\\:)?${ncname})`;
 const startTagOpen = new RegExp(`^<${qnameCapture}`);
 const startTagClose = /^\s*(\/?)>/;
 const endTag = new RegExp(`^<\\/${qnameCapture}[^>]*>`);
-
+export function createASTElement(tag, parent) {
+    return {
+        type: 1,
+        tag,
+        parent,
+        children: [],
+    };
+}
 export function parseHTML(html, options) {
     let index = 0;
     while (html) {
@@ -90,14 +97,53 @@ export function parseHTML(html, options) {
 }
 const template = "<div><span>3<5吗</span><span>?</span></div>";
 console.log(template);
-parseHTML(template, {
-    start: (tagName, unary, start, end) => {
-        console.log("开始标签：", tagName, unary, start, end);
-    },
-    end: (tagName, start, end) => {
-        console.log("结束标签：", tagName, start, end);
-    },
-    chars: (text, start, end) => {
-        console.log("文本：", text, start, end);
-    },
-});
+
+function parse(template) {
+    let root;
+    let currentParent;
+    let stack = [];
+    function closeElement(element) {
+        if (currentParent) {
+            currentParent.children.push(element);
+            element.parent = currentParent;
+        }
+    }
+    parseHTML(template, {
+        start: (tagName, unary, start, end) => {
+            let element = createASTElement(tagName, currentParent);
+            if (!root) {
+                root = element;
+            }
+
+            if (!unary) {
+                currentParent = element;
+                stack.push(element);
+            } else {
+                closeElement(element);
+            }
+        },
+        end: (tagName, start, end) => {
+            const element = stack[stack.length - 1];
+            // pop stack
+            stack.length -= 1;
+            currentParent = stack[stack.length - 1];
+            closeElement(element);
+        },
+        chars: (text, start, end) => {
+            if (!currentParent) {
+                return;
+            }
+            const children = currentParent.children;
+            if (text) {
+                let child = {
+                    type: 3,
+                    text,
+                };
+                children.push(child);
+            }
+        },
+    });
+    return root;
+}
+const ast = parse(template);
+console.log(ast);
