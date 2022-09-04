@@ -146,6 +146,10 @@ module.exports = {
                         title: "24.模版编译之生成AST",
                         path: "/posts/Vue2剥丝抽茧-模版编译之生成AST",
                     },
+                    {
+                        title: "25.模版编译之静态render",
+                        path: "/posts/Vue2剥丝抽茧-模版编译之静态render",
+                    },
                 ],
             },
             {

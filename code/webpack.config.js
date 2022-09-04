@@ -1,5 +1,5 @@
 const path = require("path");
-const currentPath = "24.Vue2剥丝抽茧-模版编译之生成AST";
+const currentPath = "25.Vue2剥丝抽茧-模版编译之静态render";
 module.exports = {
     entry: `./${currentPath}/main.js`,
     resolve: {
